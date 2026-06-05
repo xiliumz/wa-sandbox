@@ -63,6 +63,18 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
                 placeholder="your_verify_token"
               />
             </div>
+
+            <div>
+              <label className={labelClass}>App Secret (for webhook signature)</label>
+              <input
+                type="password"
+                value={form.appSecret}
+                onChange={(e) => setForm({ ...form, appSecret: e.target.value })}
+                className={inputClass}
+                placeholder="your_app_secret"
+              />
+              <p className="text-[11px] text-gray-400 mt-1">Used to sign outgoing webhooks with X-Hub-Signature-256</p>
+            </div>
           </div>
 
           {/* Backend API */}
@@ -73,7 +85,19 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
             </h3>
 
             <div>
-              <label className={labelClass}>Backend API URL (GET for polling)</label>
+              <label className={labelClass}>WebSocket URL (real-time replies)</label>
+              <input
+                type="text"
+                value={form.wsUrl}
+                onChange={(e) => setForm({ ...form, wsUrl: e.target.value })}
+                className={inputClass}
+                placeholder="ws://localhost:3001"
+              />
+              <p className="text-[11px] text-gray-400 mt-1">Backend POSTs to the bridge server, messages pushed via WebSocket</p>
+            </div>
+
+            <div>
+              <label className={labelClass}>Backend API URL (GET polling fallback)</label>
               <input
                 type="text"
                 value={form.backendApiUrl}
@@ -81,7 +105,7 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
                 className={inputClass}
                 placeholder="http://localhost:3000/api/messages"
               />
-              <p className="text-[11px] text-gray-400 mt-1">Frontend will poll this endpoint for new messages</p>
+              <p className="text-[11px] text-gray-400 mt-1">Only used if WebSocket URL is empty</p>
             </div>
 
             <div>

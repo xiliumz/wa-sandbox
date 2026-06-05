@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { ChatHeader } from './ChatHeader';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
@@ -7,6 +7,7 @@ import { MessageInjector } from './MessageInjector';
 import { ListSelectionModal } from './ListSelectionModal';
 import { useChatStore } from '@/hooks/useChatStore';
 import { useWebhook } from '@/hooks/useWebhook';
+import { useWebSocket } from '@/hooks/useWebSocket';
 import type { Message, MediaType } from '@/types/messages';
 
 export function ChatContainer() {
@@ -14,32 +15,18 @@ export function ChatContainer() {
   const { sendWebhook } = useWebhook(store.config);
   const [activeListMessageId, setActiveListMessageId] = useState<string | null>(null);
 
-  // Simple polling implementation inline
-  useEffect(() => {
-    if (!store.config.backendApiUrl) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(store.config.backendApiUrl, {
-          method: 'GET',
-          headers: { Accept: 'application/json' },
-        });
-        if (!response.ok) return;
-        const data = await response.json();
-        if (!Array.isArray(data)) return;
-
-        data.forEach((msg: Message) => {
-          if (!store.messages.find((m) => m.id === msg.id)) {
-            store.addMessage({ ...msg, direction: 'incoming', status: 'read' });
-          }
-        });
-      } catch {
-        // Ignore polling errors
-      }
-    }, store.config.pollInterval);
-
-    return () => clearInterval(interval);
-  }, [store.config.backendApiUrl, store.config.pollInterval, store.messages, store.addMessage]);
+  // Real-time incoming messages via WebSocket bridge
+  useWebSocket({
+    url: store.config.wsUrl || '',
+    onMessage: (msgs: Message[]) => {
+      msgs.forEach((msg) => {
+        const exists = store.messages.find((m) => m.id === msg.id);
+        if (!exists) {
+          store.addMessage({ ...msg, direction: 'incoming', status: 'read' });
+        }
+      });
+    },
+  });
 
   const activeListMessage = store.messages.find(
     (m): m is Message & { type: 'interactive_list' } =>
@@ -108,9 +95,7 @@ export function ChatContainer() {
 
       <SettingsPanel
         isOpen={store.isSettingsOpen}
-        onClose={() => {
-          store.setIsSettingsOpen(false);
-        }}
+        onClose={() => store.setIsSettingsOpen(false)}
         config={store.config}
         onSave={store.setConfig}
       />

@@ -67,6 +67,8 @@ export type Message = TextMessage | MediaMessage | InteractiveButtonMessage | In
 export interface ChatConfig {
   webhookUrl: string;
   verifyToken: string;
+  appSecret: string;
+  wsUrl: string;
   backendApiUrl: string;
   pollInterval: number;
   userPhone: string;
@@ -74,12 +76,4 @@ export interface ChatConfig {
   businessName: string;
 }
 
-export const DEFAULT_CONFIG: ChatConfig = {
-  webhookUrl: import.meta.env.VITE_WEBHOOK_URL || 'http://localhost:3000/webhook',
-  verifyToken: import.meta.env.VITE_VERIFY_TOKEN || 'test_verify_token',
-  backendApiUrl: import.meta.env.VITE_BACKEND_API_URL || '',
-  pollInterval: Number(import.meta.env.VITE_POLL_INTERVAL) || 3000,
-  userPhone: import.meta.env.VITE_USER_PHONE || '6281234567890',
-  businessPhone: import.meta.env.VITE_BUSINESS_PHONE || '15550000000',
-  businessName: 'Business Account',
-};
+
