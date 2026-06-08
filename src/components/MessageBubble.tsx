@@ -11,6 +11,29 @@ interface MessageBubbleProps {
 }
 
 export function MessageBubble({ message, onButtonClick, onOpenList }: MessageBubbleProps) {
+  // Outgoing interactive replies render as simple text bubbles
+  if (message.direction === 'outgoing' && message.type === 'interactive_button') {
+    return (
+      <TextBubble
+        content={message.buttonTitle || message.body.text}
+        direction="outgoing"
+        timestamp={message.timestamp}
+        status={message.status}
+      />
+    );
+  }
+
+  if (message.direction === 'outgoing' && message.type === 'interactive_list') {
+    return (
+      <TextBubble
+        content={message.rowTitle || message.body.text}
+        direction="outgoing"
+        timestamp={message.timestamp}
+        status={message.status}
+      />
+    );
+  }
+
   switch (message.type) {
     case 'text':
       return (
