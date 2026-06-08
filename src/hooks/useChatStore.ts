@@ -70,34 +70,37 @@ export function useChatStore() {
   }, [addMessage]);
 
   const sendButtonReply = useCallback((buttonId: string, buttonTitle: string) => {
-    const message: TextMessage & { buttonId: string; buttonTitle: string } = {
+    const message: InteractiveButtonMessage = {
       id: uuidv4(),
-      type: 'text',
+      type: 'interactive_button',
       direction: 'outgoing',
-      content: buttonTitle,
+      body: { text: buttonTitle },
+      buttons: [],
       buttonId,
       buttonTitle,
       timestamp: Date.now(),
       status: 'sending',
     };
-    addMessage(message as unknown as Message);
-    return message as unknown as Message;
+    addMessage(message);
+    return message;
   }, [addMessage]);
 
   const sendListReply = useCallback((rowId: string, rowTitle: string, rowDescription?: string) => {
-    const message: TextMessage & { rowId: string; rowTitle: string; rowDescription: string } = {
+    const message: InteractiveListMessage = {
       id: uuidv4(),
-      type: 'text',
+      type: 'interactive_list',
       direction: 'outgoing',
-      content: rowTitle,
+      body: { text: rowTitle },
+      buttonText: 'Select',
+      sections: [],
       rowId,
       rowTitle,
       rowDescription: rowDescription || '',
       timestamp: Date.now(),
       status: 'sending',
     };
-    addMessage(message as unknown as Message);
-    return message as unknown as Message;
+    addMessage(message);
+    return message;
   }, [addMessage]);
 
   const updateMessageStatus = useCallback((id: string, status: Message['status']) => {

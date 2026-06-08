@@ -40,6 +40,9 @@ export interface InteractiveButtonMessage extends BaseMessage {
   body: { text: string };
   footer?: { text: string };
   buttons: InteractiveButtonOption[];
+  /** Present on outgoing button-reply messages */
+  buttonId?: string;
+  buttonTitle?: string;
 }
 
 export interface InteractiveListRow {
@@ -60,6 +63,10 @@ export interface InteractiveListMessage extends BaseMessage {
   footer?: { text: string };
   buttonText: string;
   sections: InteractiveListSection[];
+  /** Present on outgoing list-reply messages */
+  rowId?: string;
+  rowTitle?: string;
+  rowDescription?: string;
 }
 
 export type Message = TextMessage | MediaMessage | InteractiveButtonMessage | InteractiveListMessage;

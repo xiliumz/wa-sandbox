@@ -152,8 +152,8 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
       baseMessage.interactive = {
         type: 'button_reply',
         button_reply: {
-          id: (message as unknown as { buttonId: string }).buttonId || 'btn_unknown',
-          title: (message as unknown as { buttonTitle: string }).buttonTitle || 'Unknown',
+          id: message.buttonId || 'btn_unknown',
+          title: message.buttonTitle || 'Unknown',
         },
       };
       break;
@@ -163,9 +163,9 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
       baseMessage.interactive = {
         type: 'list_reply',
         list_reply: {
-          id: (message as unknown as { rowId: string }).rowId || 'row_unknown',
-          title: (message as unknown as { rowTitle: string }).rowTitle || 'Unknown',
-          description: (message as unknown as { rowDescription: string }).rowDescription || '',
+          id: message.rowId || 'row_unknown',
+          title: message.rowTitle || 'Unknown',
+          description: message.rowDescription || '',
         },
       };
       break;
