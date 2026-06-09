@@ -133,7 +133,7 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
         sha256: 'simulated_sha256',
         id: `MEDIA_${uuidv4()}`,
         url: message.mediaUrl,
-        voice: true,
+        voice: message.voice || false,
       };
       break;
     case 'document':

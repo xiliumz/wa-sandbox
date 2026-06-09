@@ -23,6 +23,8 @@ export interface MediaMessage extends BaseMessage {
   mimeType?: string;
   filename?: string;
   fileSize?: number;
+  /** True for voice messages (ptt) */
+  voice?: boolean;
 }
 
 export interface InteractiveButtonOption {

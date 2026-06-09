@@ -57,6 +57,17 @@ export function ChatContainer() {
     [store, sendWebhook]
   );
 
+  const handleSendVoice = useCallback(
+    async (blob: Blob) => {
+      const file = new File([blob], 'voice.ogg', { type: blob.type || 'audio/ogg' });
+      const url = URL.createObjectURL(file);
+      const message = store.sendMediaMessage('audio', url, file, undefined, true);
+      const success = await sendWebhook(message);
+      store.updateMessageStatus(message.id, success ? 'sent' : 'failed');
+    },
+    [store, sendWebhook]
+  );
+
   const handleButtonClick = useCallback(
     async (buttonId: string, buttonTitle: string) => {
       const message = store.sendButtonReply(buttonId, buttonTitle);
@@ -95,6 +106,7 @@ export function ChatContainer() {
       <ChatInput
         onSendText={handleSendText}
         onSendMedia={handleSendMedia}
+        onSendVoice={handleSendVoice}
         disabled={false}
       />
 

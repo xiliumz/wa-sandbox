@@ -1,5 +1,5 @@
-import { Send, Paperclip, Mic, X, FileText, Image, Video, Music } from 'lucide-react';
-import { useState, useRef, useCallback } from 'react';
+import { Send, Paperclip, Mic, X, FileText, Image, Video, Music, Trash2, Square } from 'lucide-react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { cn } from '@/utils/cn';
 import type { MediaType } from '@/types/messages';
 
@@ -12,16 +12,30 @@ interface PreviewFile {
 interface ChatInputProps {
   onSendText: (text: string) => void;
   onSendMedia: (type: MediaType, files: File[], caption?: string) => void;
+  onSendVoice?: (blob: Blob) => void;
   disabled?: boolean;
 }
 
-export function ChatInput({ onSendText, onSendMedia, disabled }: ChatInputProps) {
+function formatDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: ChatInputProps) {
   const [text, setText] = useState('');
   const [showAttach, setShowAttach] = useState(false);
   const [previewFiles, setPreviewFiles] = useState<PreviewFile[]>([]);
   const [mediaCaption, setMediaCaption] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+  const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   const handleSend = useCallback(() => {
     if (previewFiles.length > 0) {
@@ -45,6 +59,93 @@ export function ChatInput({ onSendText, onSendMedia, disabled }: ChatInputProps)
       handleSend();
     }
   }, [handleSend]);
+
+  // Voice recording
+  const startRecording = useCallback(async () => {
+    if (!onSendVoice) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg';
+      const recorder = new MediaRecorder(stream, { mimeType });
+      mediaRecorderRef.current = recorder;
+      chunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: mimeType });
+        setRecordedBlob(blob);
+        setRecordedUrl(URL.createObjectURL(blob));
+        setIsRecording(false);
+        setRecordingDuration(0);
+        stream.getTracks().forEach((t) => t.stop());
+      };
+
+      recorder.onerror = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        setIsRecording(false);
+        setRecordingDuration(0);
+      };
+
+      recorder.start();
+      setIsRecording(true);
+      setRecordingDuration(0);
+      timerRef.current = setInterval(() => {
+        setRecordingDuration((d) => d + 1);
+      }, 1000);
+    } catch {
+      console.error('Failed to start recording');
+      setIsRecording(false);
+    }
+  }, [onSendVoice]);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const cancelRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setRecordedBlob(null);
+    setRecordedUrl(null);
+    setIsRecording(false);
+    setRecordingDuration(0);
+  }, []);
+
+  const sendRecording = useCallback(() => {
+    if (recordedBlob && onSendVoice) {
+      onSendVoice(recordedBlob);
+      if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+      setRecordedBlob(null);
+      setRecordedUrl(null);
+    }
+  }, [recordedBlob, recordedUrl, onSendVoice]);
+
+  const discardRecording = useCallback(() => {
+    if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+    setRecordedBlob(null);
+    setRecordedUrl(null);
+  }, [recordedUrl]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+    };
+  }, [recordedUrl]);
 
   const handleFileSelect = useCallback((type: MediaType, accept: string) => {
     if (!fileInputRef.current) return;
@@ -92,9 +193,11 @@ export function ChatInput({ onSendText, onSendMedia, disabled }: ChatInputProps)
 
   const hasPreview = previewFiles.length > 0;
   const previewType = hasPreview ? previewFiles[0].type : null;
+  const isVoiceMode = isRecording || recordedBlob !== null;
 
   return (
     <div className="bg-[#f0f2f5] px-4 py-2 relative">
+      {/* Media file preview */}
       {hasPreview && (
         <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-lg shadow-lg p-3 border border-gray-200 max-h-80 overflow-y-auto">
           <div className="flex items-center justify-between mb-2">
@@ -179,60 +282,137 @@ export function ChatInput({ onSendText, onSendMedia, disabled }: ChatInputProps)
         </div>
       )}
 
+      {/* Voice recording preview */}
+      {recordedBlob && recordedUrl && (
+        <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-lg shadow-lg p-3 border border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">Voice message</span>
+            <button onClick={discardRecording} className="p-1 hover:bg-gray-100 rounded-full">
+              <X size={16} className="text-gray-500" />
+            </button>
+          </div>
+          <audio src={recordedUrl} className="w-full" controls />
+        </div>
+      )}
+
       <div className="flex items-end gap-2">
-        <div className="relative">
-          <button
-            onClick={() => setShowAttach(!showAttach)}
-            className={cn(
-              'p-2 rounded-full transition-colors mb-1',
-              showAttach ? 'bg-gray-300 text-gray-700' : 'text-gray-500 hover:bg-gray-200'
+        {/* Attachment button (hidden while recording) */}
+        {!isVoiceMode && (
+          <div className="relative">
+            <button
+              onClick={() => setShowAttach(!showAttach)}
+              className={cn(
+                'p-2 rounded-full transition-colors mb-1',
+                showAttach ? 'bg-gray-300 text-gray-700' : 'text-gray-500 hover:bg-gray-200'
+              )}
+              disabled={disabled}
+            >
+              {showAttach ? <X size={20} /> : <Paperclip size={20} />}
+            </button>
+
+            {showAttach && (
+              <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-[160px]">
+                {attachOptions.map((opt) => (
+                  <button
+                    key={opt.type}
+                    onClick={() => handleFileSelect(opt.type, opt.accept)}
+                    className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             )}
-            disabled={disabled}
-          >
-            {showAttach ? <X size={20} /> : <Paperclip size={20} />}
-          </button>
+          </div>
+        )}
 
-          {showAttach && (
-            <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-[160px]">
-              {attachOptions.map((opt) => (
-                <button
-                  key={opt.type}
-                  onClick={() => handleFileSelect(opt.type, opt.accept)}
-                  className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  {opt.icon}
-                  {opt.label}
-                </button>
-              ))}
+        {/* Input area / Recording UI */}
+        <div className="flex-1 bg-white rounded-lg px-3 py-2 max-h-32 overflow-y-auto flex items-center">
+          {isRecording ? (
+            <div className="flex items-center gap-3 w-full">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+              </span>
+              <span className="text-sm text-red-600 font-medium">Recording</span>
+              <span className="text-sm text-gray-600 ml-auto">{formatDuration(recordingDuration)}</span>
             </div>
+          ) : (
+            <input
+              ref={inputRef}
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={hasPreview ? 'Add caption above...' : 'Message'}
+              className="w-full outline-none text-sm text-gray-800 placeholder-gray-500 bg-transparent"
+              disabled={disabled || hasPreview}
+            />
           )}
         </div>
 
-        <div className="flex-1 bg-white rounded-lg px-3 py-2 max-h-32 overflow-y-auto">
-          <input
-            ref={inputRef}
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={hasPreview ? 'Add caption above...' : 'Message'}
-            className="w-full outline-none text-sm text-gray-800 placeholder-gray-500 bg-transparent"
-            disabled={disabled || hasPreview}
-          />
-        </div>
-
-        <button
-          onClick={handleSend}
-          disabled={disabled || (!text.trim() && !hasPreview)}
-          className={cn(
-            'p-2 rounded-full mb-1 transition-colors',
-            text.trim() || hasPreview
-              ? 'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark'
-              : 'text-gray-500 hover:bg-gray-200'
-          )}
-        >
-          {text.trim() || hasPreview ? <Send size={20} /> : <Mic size={20} />}
-        </button>
+        {/* Action buttons */}
+        {isRecording ? (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={cancelRecording}
+              className="p-2 rounded-full mb-1 text-red-500 hover:bg-red-50 transition-colors"
+              title="Cancel"
+            >
+              <Trash2 size={20} />
+            </button>
+            <button
+              onClick={stopRecording}
+              className="p-2 rounded-full mb-1 bg-white text-gray-700 hover:bg-gray-100 transition-colors border border-gray-200"
+              title="Stop recording"
+            >
+              <Square size={20} className="fill-current" />
+            </button>
+          </div>
+        ) : recordedBlob ? (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={discardRecording}
+              className="p-2 rounded-full mb-1 text-red-500 hover:bg-red-50 transition-colors"
+              title="Discard"
+            >
+              <Trash2 size={20} />
+            </button>
+            <button
+              onClick={sendRecording}
+              className="p-2 rounded-full mb-1 bg-whatsapp-green text-white hover:bg-whatsapp-green-dark transition-colors"
+              title="Send voice message"
+            >
+              <Send size={20} />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleSend}
+            disabled={disabled || (!text.trim() && !hasPreview)}
+            className={cn(
+              'p-2 rounded-full mb-1 transition-colors',
+              text.trim() || hasPreview
+                ? 'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark'
+                : 'text-gray-500 hover:bg-gray-200'
+            )}
+          >
+            {text.trim() || hasPreview ? (
+              <Send size={20} />
+            ) : (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  startRecording();
+                }}
+                className="flex items-center justify-center"
+              >
+                <Mic size={20} />
+              </button>
+            )}
+          </button>
+        )}
       </div>
 
       <input

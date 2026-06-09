@@ -52,7 +52,8 @@ export function useChatStore() {
     type: MediaType,
     mediaUrl: string,
     file: File,
-    caption?: string
+    caption?: string,
+    voice?: boolean
   ) => {
     const message: MediaMessage = {
       id: uuidv4(),
@@ -63,6 +64,7 @@ export function useChatStore() {
       mimeType: file.type,
       filename: file.name,
       fileSize: file.size,
+      voice,
       timestamp: Date.now(),
       status: 'sending',
     };
