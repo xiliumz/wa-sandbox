@@ -51,14 +51,15 @@ export function useChatStore() {
   const sendMediaMessage = useCallback((
     type: MediaType,
     mediaUrl: string,
-    file: File
+    file: File,
+    caption?: string
   ) => {
     const message: MediaMessage = {
       id: uuidv4(),
       type,
       direction: 'outgoing',
       mediaUrl,
-      caption: '',
+      caption,
       mimeType: file.type,
       filename: file.name,
       fileSize: file.size,

@@ -43,11 +43,16 @@ export function ChatContainer() {
   );
 
   const handleSendMedia = useCallback(
-    async (type: MediaType, file: File) => {
-      const url = URL.createObjectURL(file);
-      const message = store.sendMediaMessage(type, url, file);
-      const success = await sendWebhook(message);
-      store.updateMessageStatus(message.id, success ? 'sent' : 'failed');
+    async (type: MediaType, files: File[], caption?: string) => {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const url = URL.createObjectURL(file);
+        // Only the first image gets the caption (matching WhatsApp album behavior)
+        const fileCaption = i === 0 ? caption : undefined;
+        const message = store.sendMediaMessage(type, url, file, fileCaption);
+        const success = await sendWebhook(message);
+        store.updateMessageStatus(message.id, success ? 'sent' : 'failed');
+      }
     },
     [store, sendWebhook]
   );
