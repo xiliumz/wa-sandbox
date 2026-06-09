@@ -3,6 +3,7 @@ import type { Message } from '@/types/messages';
 
 interface UseWebSocketOptions {
   url: string;
+  phone: string;
   onMessage: (messages: Message[]) => void;
 }
 
@@ -15,7 +16,7 @@ function getClientId(): string {
   return id;
 }
 
-export function useWebSocket({ url, onMessage }: UseWebSocketOptions) {
+export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onMessageRef = useRef(onMessage);
@@ -30,6 +31,9 @@ export function useWebSocket({ url, onMessage }: UseWebSocketOptions) {
       try {
         const wsUrl = new URL(url);
         wsUrl.searchParams.set('clientId', clientIdRef.current);
+        if (phone) {
+          wsUrl.searchParams.set('phone', phone);
+        }
         const ws = new WebSocket(wsUrl.toString());
         wsRef.current = ws;
 
@@ -74,5 +78,5 @@ export function useWebSocket({ url, onMessage }: UseWebSocketOptions) {
         reconnectRef.current = null;
       }
     };
-  }, [url]);
+  }, [url, phone]);
 }
