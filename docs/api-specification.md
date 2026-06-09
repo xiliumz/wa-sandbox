@@ -82,7 +82,22 @@ All payloads follow this **common wrapper**:
 
 **Note for all media**: The file is **not** included. Use the `id` (recommended) or `url` to download it via Cloud API.
 
-### 5. User clicks **Reply Button** (Interactive Button)
+### 5. User sends **Multiple Media (Album)**
+
+When a user selects and sends multiple images/videos at once, WhatsApp delivers them as **separate webhook messages** — one HTTP POST per image. The messages arrive in order:
+
+- **First message**: carries the user's typed caption (if any) on the media object
+- **Subsequent messages**: same album, no `caption` field (or `caption` is absent/null)
+
+```
+User sends 3 images with caption "Field check" →
+
+  Webhook call 1: { type: "image", image: { caption: "Field check", id: "...", ... } }
+  Webhook call 2: { type: "image", image: { id: "...", ... } }               // no caption
+  Webhook call 3: { type: "image", image: { id: "...", ... } }               // no caption
+```
+
+### 6. User clicks **Reply Button** (Interactive Button)
 
 ```json
 {
@@ -97,7 +112,7 @@ All payloads follow this **common wrapper**:
 }
 ```
 
-### 6. User selects from **List** (Interactive List)
+### 7. User selects from **List** (Interactive List)
 
 ```json
 {
@@ -112,6 +127,15 @@ All payloads follow this **common wrapper**:
   }
 }
 ```
+
+### Quick Tips for Your Code
+
+- Check `messages[0].type` first.
+- If `type === "interactive"`, then check `interactive.type` → either `"button_reply"` or `"list_reply"`.
+- Always save `messages[0].from` (user's WhatsApp ID) and `messages[0].id` (message ID).
+- For media, call the Media API with the `id` to get the file.
+
+---
 
 ## **Here are the clean JSON structures for sending messages** via WhatsApp Cloud API.
 
