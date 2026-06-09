@@ -310,6 +310,8 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
             <input
               ref={inputRef}
               type="text"
+              name="message"
+              autoComplete="off"
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={handleKeyDown}
