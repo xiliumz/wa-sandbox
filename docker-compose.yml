@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_WEBHOOK_URL: ${VITE_WEBHOOK_URL}
+        VITE_VERIFY_TOKEN: ${VITE_VERIFY_TOKEN}
+        VITE_APP_SECRET: ${VITE_APP_SECRET}
+        VITE_WS_URL: ${VITE_WS_URL}
+        VITE_BACKEND_API_URL: ${VITE_BACKEND_API_URL}
+        VITE_POLL_INTERVAL: ${VITE_POLL_INTERVAL}
+        VITE_USER_PHONE: ${VITE_USER_PHONE}
+        VITE_BUSINESS_PHONE: ${VITE_BUSINESS_PHONE}
+    ports:
+      - "4000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
