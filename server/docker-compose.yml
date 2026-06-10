@@ -1,0 +1,10 @@
+services:
+  backend:
+    build:
+      context: .
+
+    container_name: wa-prot-server
+    ports:
+      - "${PORT:-3001}:${PORT:-3001}"
+    environment:
+      - PORT=${PORT:-3001}

@@ -1,13 +1,11 @@
 FROM node:20-alpine
 WORKDIR /app
 
-# Copy package files and install production dependencies
-COPY server/package.json server/package-lock.json ./
+COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-# Copy backend source
-COPY server/ ./server/
+COPY . .
 
 EXPOSE 3001
 
-CMD ["node", "server/index.js"]
+CMD ["node", "index.js"]
