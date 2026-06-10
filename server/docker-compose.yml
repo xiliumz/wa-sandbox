@@ -3,7 +3,7 @@ services:
     build:
       context: .
 
-    container_name: wa-prot-server
+    container_name: wa-sandbox-server
     ports:
       - "${PORT:-3001}:${PORT:-3001}"
     environment:
