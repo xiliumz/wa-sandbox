@@ -101,6 +101,12 @@ All config lives in `.env` (Vite bakes `VITE_*` vars into the frontend bundle at
 | `VITE_USER_PHONE` | Yes | The simulator's "from" phone number (e.g. `6281234567890`) |
 | `VITE_BUSINESS_PHONE` | Yes | The business phone number being simulated (e.g. `15550000000`) |
 
+These variables are only used by Docker Compose:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `BACKEND_PORT` | `4001` | Port of the backend bridge server (used by both nginx proxy and the backend container) |
+
 ## Using Docker Compose
 
 Docker Compose runs both the frontend (served by nginx) and the bridge backend as isolated containers with a single command.

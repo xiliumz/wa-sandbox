@@ -16,6 +16,9 @@ services:
         VITE_BUSINESS_PHONE: ${VITE_BUSINESS_PHONE}
     ports:
       - "4000:80"
+    environment:
+      # Runtime var for envsubst in nginx.conf.template (not build-time)
+      - BACKEND_PORT=${BACKEND_PORT:-4001}
     depends_on:
       - backend
 
@@ -24,6 +27,6 @@ services:
       context: server
       dockerfile: Dockerfile
     ports:
-      - "4001:4001"
+      - "${BACKEND_PORT:-4001}:${BACKEND_PORT:-4001}"
     environment:
-      - PORT=4001
+      - PORT=${BACKEND_PORT:-4001}

@@ -31,6 +31,10 @@ RUN npm run build
 # Stage 2: Serve with nginx
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
+
+ENV BACKEND_PORT=4001
+
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# envsubst only replaces listed vars (nginx's own $host, $uri, etc. are left untouched)
+CMD ["/bin/sh", "-c", "envsubst '$BACKEND_PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
