@@ -19,7 +19,7 @@ The project has two parts:
 │   (Frontend) │                              │   (e.g. chatbot) │
 └──────┬───────┘                              └───────┬──────────┘
        │                                              │
-       │  WebSocket (real-time)        POST /api/inbox│
+       │  WebSocket (real-time)       POST /api/messages│
        │       ◀──────────────────────────────────────┘
        ▼
   Replies appear
@@ -29,7 +29,7 @@ The project has two parts:
 | Direction | What happens |
 |-----------|-------------|
 | **Outgoing** (user → your backend) | You type in the simulator → it POSTs a Meta Graph API-format webhook payload to your `VITE_WEBHOOK_URL`. Your backend receives it exactly as if WhatsApp sent it. |
-| **Incoming** (your backend → simulator) | Your backend POSTs to the bridge server at `POST /api/inbox` → the bridge pushes the message via WebSocket to the simulator UI. |
+| **Incoming** (your backend → simulator) | Your backend POSTs to the bridge server at `POST /api/messages` → the bridge pushes the message via WebSocket to the simulator UI. |
 
 ## Features
 
@@ -84,7 +84,6 @@ npm run dev
 ```
 
 - **Simulator UI**: [http://localhost:5173](http://localhost:5173)
-- **Bridge server health**: [http://localhost:3001/health](http://localhost:3001/health)
 
 ## Configuration
 
@@ -130,10 +129,9 @@ This starts two services:
 | Service | Container port | Host port | Description |
 |---------|---------------|-----------|-------------|
 | `frontend` | 80 | **4000** | React app served by nginx |
-| `backend` | 4001 | **4001** | WebSocket bridge server |
+| `backend` | 4001 | - | WebSocket bridge server (internal only) |
 
 - **Simulator UI**: [http://localhost:4000](http://localhost:4000)
-- **Bridge server health**: [http://localhost:4000/health](http://localhost:4000/health) (proxied through nginx)
 
 ### 3. How the Docker setup works
 
@@ -141,10 +139,9 @@ The nginx config in the frontend container acts as a reverse proxy:
 
 ```
 Browser ──▶ nginx (port 80)
-              ├── /           → serves static React SPA
-              ├── /api/*      → proxy_pass to backend:4001
-              ├── /ws         → proxy_pass to backend:4001 (WebSocket upgrade)
-              └── /health     → proxy_pass to backend:4001
+             ├── /           → serves static React SPA
+             ├── /api/*      → proxy_pass to backend:4001 (strips /api prefix)
+             └── /ws         → proxy_pass to backend:4001 (WebSocket upgrade)
 ```
 
 This means from the browser's perspective, everything is served from the same origin (`localhost:4000`), avoiding CORS issues. The nginx container communicates with the backend container over Docker's internal network using the service name `backend`.
@@ -181,38 +178,20 @@ This runs the backend on port `3001` (configurable via `PORT` env var).
 To send an incoming message to the simulator, POST to the bridge server:
 
 ```bash
-# Text message
-curl -X POST http://localhost:3001/api/inbox \
+# Docker (through nginx - port 4000)
+curl -X POST http://localhost:4000/api/messages \
   -H "Content-Type: application/json" \
   -d '{
     "type": "text",
     "text": { "body": "Hello from my bot!" }
   }'
 
-# Interactive buttons
-curl -X POST http://localhost:3001/api/inbox \
+# Local dev (direct to backend - port 3001)
+curl -X POST http://localhost:3001/messages \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "interactive",
-    "interactive": {
-      "type": "button",
-      "body": { "text": "Do you want to proceed?" },
-      "action": {
-        "buttons": [
-          { "type": "reply", "reply": { "id": "yes", "title": "Yes" } },
-          { "type": "reply", "reply": { "id": "no", "title": "No" } }
-        ]
-      }
-    }
-  }'
-
-# Target a specific phone number
-curl -X POST http://localhost:3001/api/inbox \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "6281234567890",
     "type": "text",
-    "text": { "body": "Personal message" }
+    "text": { "body": "Hello from my bot!" }
   }'
 ```
 

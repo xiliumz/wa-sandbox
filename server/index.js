@@ -51,11 +51,11 @@ wss.on('connection', (ws, req) => {
 });
 
 /**
- * POST /api/inbox
+ * POST /messages
  * Your backend sends replies here.
  * Body: single message object or array of messages
  */
-app.post('/api/inbox', (req, res) => {
+app.post('/messages', (req, res) => {
   const rawMessages = Array.isArray(req.body) ? req.body : [req.body];
 
   // Extract routing info before normalization
@@ -112,23 +112,8 @@ app.post('/api/inbox', (req, res) => {
   res.json({ success: true, received: routed.length, deliveredClients, deliveredMessages });
 });
 
-/**
- * GET /health
- * Health check + connection count
- */
-app.get('/health', (_, res) => {
-  // Clean up dead connections before counting
-  for (const [clientId, { ws }] of clients.entries()) {
-    if (ws.readyState !== 1) {
-      clients.delete(clientId);
-    }
-  }
-  res.json({ status: 'ok', clients: clients.size });
-});
-
 server.listen(PORT, () => {
   console.log(`\n🚀 Bridge server running on http://localhost:${PORT}`);
   console.log(`📡 WebSocket: ws://localhost:${PORT}`);
-  console.log(`📥 POST replies to: http://localhost:${PORT}/api/inbox`);
-  console.log(`🏥 Health check: http://localhost:${PORT}/health\n`);
+  console.log(`📥 POST replies to: http://localhost:${PORT}/messages`);
 });
