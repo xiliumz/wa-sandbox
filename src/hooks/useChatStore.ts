@@ -12,17 +12,7 @@ import type {
   InteractiveButtonOption,
   InteractiveListSection,
 } from '@/types/messages';
-import { DEFAULT_CONFIG } from '@/constants/config';
-
-function mergeWithDefaultConfig(): ChatConfig {
-  try {
-    const item = window.localStorage.getItem('wa-chat-config');
-    const parsed = item ? (JSON.parse(item) as Partial<ChatConfig>) : {};
-    return { ...DEFAULT_CONFIG, ...parsed };
-  } catch {
-    return DEFAULT_CONFIG;
-  }
-}
+import { mergeWithDefaultConfig } from '@/utils/chatConfig';
 
 export function useChatStore() {
   const [messages, setMessages] = useLocalStorage<Message[]>('wa-chat-messages', []);

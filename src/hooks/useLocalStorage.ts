@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 
+/**
+ * React state hook backed by `localStorage`.
+ *
+ * @param key - The localStorage key to read/write.
+ * @param initialValue - Value used when no stored value exists. May be a function.
+ * @returns A tuple of [storedValue, setStoredValue] synced with localStorage.
+ */
 export function useLocalStorage<T>(
   key: string,
   initialValue: T | (() => T)
