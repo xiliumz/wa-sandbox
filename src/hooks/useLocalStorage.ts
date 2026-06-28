@@ -4,26 +4,28 @@ import { useState, useEffect } from 'react';
  * React state hook backed by `localStorage`.
  *
  * @param key - The localStorage key to read/write.
- * @param initialValue - Value used when no stored value exists. May be a function.
+ * @param initialValue - Value used when no stored value exists, or a function
+ *   that receives the parsed stored value (or `null`) and returns the initial value.
  * @returns A tuple of [storedValue, setStoredValue] synced with localStorage.
  */
 export function useLocalStorage<T>(
   key: string,
-  initialValue: T | (() => T)
+  initialValue: T | ((stored: T | null) => T)
 ): [T, (value: T | ((prev: T) => T)) => void] {
-  const resolveInitial = (): T => {
+  const resolveInitial = (stored: T | null): T => {
     return typeof initialValue === 'function'
-      ? (initialValue as () => T)()
-      : initialValue;
+      ? (initialValue as (stored: T | null) => T)(stored)
+      : (stored ?? initialValue);
   };
 
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : resolveInitial();
+      const parsed = item ? (JSON.parse(item) as T) : null;
+      return resolveInitial(parsed);
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
-      return resolveInitial();
+      return resolveInitial(null);
     }
   });
 
