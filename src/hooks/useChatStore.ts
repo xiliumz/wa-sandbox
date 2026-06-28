@@ -2,8 +2,8 @@ import { useCallback, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useLocalStorage } from './useLocalStorage';
 import type {
-  Message,
   ChatConfig,
+  Message,
   TextMessage,
   MediaMessage,
   InteractiveButtonMessage,
@@ -12,11 +12,18 @@ import type {
   InteractiveButtonOption,
   InteractiveListSection,
 } from '@/types/messages';
-import { mergeWithDefaultConfig } from '@/utils/chatConfig';
+import { DEFAULT_CONFIG } from '@/constants/config';
+
+function getInitialChatConfig(stored: ChatConfig | null): ChatConfig {
+  return stored ? { ...DEFAULT_CONFIG, ...stored } : DEFAULT_CONFIG;
+}
 
 export function useChatStore() {
   const [messages, setMessages] = useLocalStorage<Message[]>('wa-chat-messages', []);
-  const [config, setConfig] = useLocalStorage<ChatConfig>('wa-chat-config', mergeWithDefaultConfig);
+  const [config, setConfig] = useLocalStorage<ChatConfig>(
+    'wa-chat-config',
+    getInitialChatConfig,
+  );
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInjectorOpen, setIsInjectorOpen] = useState(false);
