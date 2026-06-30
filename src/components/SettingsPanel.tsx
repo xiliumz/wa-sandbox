@@ -81,7 +81,7 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
               <Globe size={16} className="text-whatsapp-green" />
-              Backend Reply API (Optional)
+              Backend Reply API
             </h3>
 
             <div>
@@ -96,29 +96,6 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
               <p className="text-[11px] text-gray-400 mt-1">Backend POSTs to the bridge server, messages pushed via WebSocket</p>
             </div>
 
-            <div>
-              <label className={labelClass}>Backend API URL (GET polling fallback)</label>
-              <input
-                type="text"
-                value={form.backendApiUrl}
-                onChange={(e) => setForm({ ...form, backendApiUrl: e.target.value })}
-                className={inputClass}
-                placeholder="http://localhost:3000/api/messages"
-              />
-              <p className="text-[11px] text-gray-400 mt-1">Only used if WebSocket URL is empty</p>
-            </div>
-
-            <div>
-              <label className={labelClass}>Poll Interval (ms)</label>
-              <input
-                type="number"
-                value={form.pollInterval}
-                onChange={(e) => setForm({ ...form, pollInterval: Number(e.target.value) || 3000 })}
-                className={inputClass}
-                min={1000}
-                step={500}
-              />
-            </div>
           </div>
 
           {/* Identity */}

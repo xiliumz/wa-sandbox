@@ -19,7 +19,7 @@ The project has two parts:
 │   (Frontend) │                              │   (e.g. chatbot) │
 └──────┬───────┘                              └───────┬──────────┘
        │                                              │
-       │  WebSocket (real-time)       POST /api/messages│
+       │  WebSocket (real-time)           POST /api/messages
        │       ◀──────────────────────────────────────┘
        ▼
   Replies appear
@@ -94,9 +94,7 @@ All config lives in `.env` (Vite bakes `VITE_*` vars into the frontend bundle at
 | `VITE_WEBHOOK_URL` | Yes | Your backend's webhook endpoint (where outgoing messages are POSTed) |
 | `VITE_VERIFY_TOKEN` | Optional | Token for testing webhook verification |
 | `VITE_APP_SECRET` | Optional | Secret for computing `X-Hub-Signature-256` HMAC headers |
-| `VITE_WS_URL` | Yes* | Bridge server WebSocket URL (e.g. `ws://localhost:3001`) for real-time incoming messages |
-| `VITE_BACKEND_API_URL` | Optional | Legacy polling fallback (only used if `VITE_WS_URL` is empty) |
-| `VITE_POLL_INTERVAL` | Optional | Polling interval in ms (default: `3000`) |
+| `VITE_WS_URL` | Yes | Bridge server WebSocket path (default `/api/ws`; works through Vite proxy or nginx) |
 | `VITE_USER_PHONE` | Yes | The simulator's "from" phone number (e.g. `6281234567890`) |
 | `VITE_BUSINESS_PHONE` | Yes | The business phone number being simulated (e.g. `15550000000`) |
 
@@ -140,8 +138,8 @@ The nginx config in the frontend container acts as a reverse proxy:
 ```
 Browser ──▶ nginx (port 80)
              ├── /           → serves static React SPA
-             ├── /api/*      → proxy_pass to backend:4001 (strips /api prefix)
-             └── /ws         → proxy_pass to backend:4001 (WebSocket upgrade)
+|             ├── /api/*      → proxy_pass to backend:4001 (HTTP API)
+|             └── /api/ws     → proxy_pass to backend:4001 (WebSocket upgrade)
 ```
 
 This means from the browser's perspective, everything is served from the same origin (`localhost:4000`), avoiding CORS issues. The nginx container communicates with the backend container over Docker's internal network using the service name `backend`.
@@ -178,7 +176,7 @@ This runs the backend on port `3001` (configurable via `PORT` env var).
 To send an incoming message to the simulator, POST to the bridge server:
 
 ```bash
-# Docker (through nginx - port 4000)
+# Full app (Docker/nginx - port 4000)
 curl -X POST http://localhost:4000/api/messages \
   -H "Content-Type: application/json" \
   -d '{
@@ -186,8 +184,8 @@ curl -X POST http://localhost:4000/api/messages \
     "text": { "body": "Hello from my bot!" }
   }'
 
-# Local dev (direct to backend - port 3001)
-curl -X POST http://localhost:3001/messages \
+# Direct to backend (local dev - port 3001)
+curl -X POST http://localhost:3001/api/messages \
   -H "Content-Type: application/json" \
   -d '{
     "type": "text",
@@ -197,48 +195,6 @@ curl -X POST http://localhost:3001/messages \
 
 The payload format matches the **Meta Graph API** message structure. See `docs/api-specification.md` for full details on all message types.
 
-## Project Structure
-
-```
-├── src/
-│   ├── components/              # UI components
-│   │   ├── ChatContainer.tsx    # Main orchestrator
-│   │   ├── ChatHeader.tsx       # Header with settings/injector buttons
-│   │   ├── ChatInput.tsx        # Text input, media upload, voice record
-│   │   ├── MessageList.tsx      # Scrollable message list
-│   │   ├── MessageBubble.tsx    # Routes to correct bubble type
-│   │   ├── TextBubble.tsx       # Text message rendering
-│   │   ├── MediaBubble.tsx      # Image/video/audio/document rendering
-│   │   ├── InteractiveButtonMessage.tsx  # Button message rendering
-│   │   ├── InteractiveListMessage.tsx    # List message rendering
-│   │   ├── ListSelectionModal.tsx        # List selection overlay
-│   │   ├── MessageInjector.tsx  # Manual message injection panel
-│   │   ├── SettingsPanel.tsx    # Configuration UI
-│   │   └── VerificationTester.tsx        # Webhook verification tester
-│   ├── hooks/
-│   │   ├── useChatStore.ts      # Central state (messages, config, send/receive)
-│   │   ├── useWebhook.ts        # POSTs Meta-format payloads to your backend
-│   │   ├── useWebSocket.ts      # Receives incoming messages from bridge
-│   │   ├── usePollMessages.ts   # Legacy HTTP polling fallback
-│   │   └── useLocalStorage.ts   # Persistent state hook
-│   ├── types/messages.ts        # TypeScript message type definitions
-│   ├── constants/config.ts      # Default configuration values
-│   ├── App.tsx                  # Root component
-│   ├── main.tsx                 # Entry point
-│   └── index.css                # Tailwind + custom styles
-├── server/
-│   ├── index.js                 # Express + WebSocket bridge server
-│   ├── normalize-message.js     # Meta API format → simulator internal format
-│   ├── Dockerfile               # Backend container image
-│   └── docker-compose.yml       # Standalone backend compose
-├── docs/
-│   └── api-specification.md     # Meta Graph API payload reference
-├── assets/                      # Screenshot images
-├── Dockerfile                   # Multi-stage frontend (build → nginx)
-├── docker-compose.yml           # Full-stack compose (frontend + backend)
-├── nginx.conf                   # Nginx config with API/WS proxy
-└── .env.example                 # Environment variable template
-```
 
 ## License
 

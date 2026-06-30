@@ -7,7 +7,7 @@ import { normalizeMessage } from './normalize-message.js';
 
 const app = express();
 const server = createServer(app);
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server, path: '/api/ws' });
 
 const PORT = process.env.PORT || 3001;
 
@@ -51,11 +51,11 @@ wss.on('connection', (ws, req) => {
 });
 
 /**
- * POST /messages
+ * POST /api/messages
  * Your backend sends replies here.
  * Body: single message object or array of messages
  */
-app.post('/messages', (req, res) => {
+app.post('/api/messages', (req, res) => {
   const rawMessages = Array.isArray(req.body) ? req.body : [req.body];
 
   // Extract routing info before normalization
@@ -114,6 +114,6 @@ app.post('/messages', (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n🚀 Bridge server running on http://localhost:${PORT}`);
-  console.log(`📡 WebSocket: ws://localhost:${PORT}`);
-  console.log(`📥 POST replies to: http://localhost:${PORT}/messages`);
+  console.log(`📡 WebSocket: ws://localhost:${PORT}/api/ws`);
+  console.log(`📥 POST replies to: http://localhost:${PORT}/api/messages`);
 });

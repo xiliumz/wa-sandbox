@@ -25,11 +25,14 @@ export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
   onMessageRef.current = onMessage;
 
   useEffect(() => {
-    if (!url || !url.startsWith('ws')) return;
+    if (!url) return;
 
     const connect = () => {
       try {
-        const wsUrl = new URL(url);
+        const wsUrl = new URL(url, window.location.href);
+        if (wsUrl.protocol === 'http:' || wsUrl.protocol === 'https:') {
+          wsUrl.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        }
         wsUrl.searchParams.set('clientId', clientIdRef.current);
         if (phone) {
           wsUrl.searchParams.set('phone', phone);

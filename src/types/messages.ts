@@ -78,8 +78,6 @@ export interface ChatConfig {
   verifyToken: string;
   appSecret: string;
   wsUrl: string;
-  backendApiUrl: string;
-  pollInterval: number;
   userPhone: string;
   businessPhone: string;
   businessName: string;
