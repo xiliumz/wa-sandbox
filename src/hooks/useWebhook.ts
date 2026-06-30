@@ -1,30 +1,8 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { ChatConfig, Message } from '@/types/messages';
 
-function getTimestamp(): number {
-  return Math.floor(Date.now() / 1000);
-}
-
-async function computeSignature(body: string, secret: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(body));
-  const bytes = new Uint8Array(signature);
-  const hex = Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  return `sha256=${hex}`;
-}
-
 export function useWebhook(config: ChatConfig) {
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   const sendWebhook = useCallback(async (message: Message): Promise<boolean> => {
     if (!config.webhookUrl) return false;
@@ -42,21 +20,14 @@ export function useWebhook(config: ChatConfig) {
     }
 
     try {
-      abortControllerRef.current?.abort();
-      abortControllerRef.current = new AbortController();
-
       const response = await fetch(config.webhookUrl, {
         method: 'POST',
         headers,
         body,
-        signal: abortControllerRef.current.signal,
       });
 
       return response.ok;
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        return false;
-      }
       console.error('Webhook POST failed:', error);
       return false;
     }
@@ -100,7 +71,6 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
     id: `wamid.${uuidv4()}`,
     timestamp: getTimestamp().toString(),
   };
-
   switch (message.type) {
     case 'text':
       baseMessage.type = 'text';
@@ -171,7 +141,6 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
       break;
     }
   }
-
   return {
     object: 'whatsapp_business_account',
     entry: [
@@ -199,4 +168,25 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
       },
     ],
   };
+}
+
+function getTimestamp(): number {
+  return Math.floor(Date.now() / 1000);
+}
+
+async function computeSignature(body: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(body));
+  const bytes = new Uint8Array(signature);
+  const hex = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return `sha256=${hex}`;
 }
