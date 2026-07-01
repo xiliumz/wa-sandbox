@@ -10,10 +10,15 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server, path: '/api/ws' });
 
+// Internal port; must match nginx.conf.template
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 
 wss.on('connection', (ws, req) => {
   const url = new URL(req.url || '/', `http://localhost:${PORT}`);

@@ -99,13 +99,6 @@ npm run build
 npm run preview
 ```
 
-**Backend-only Docker (port 3001):**
-
-```bash
-cd server
-docker compose up --build
-```
-
 **Full-stack Docker Compose (UI on http://localhost:4000):**
 
 ```bash
@@ -237,7 +230,7 @@ Format: `<type>: <imperative, lowercase description>`.
 - [ ] No stray `console.log` debug statements remain (keep intentional logs only).
 - [ ] If adding or changing message types, update `docs/api-specification.md`.
 - [ ] If adding/changing Tailwind theme values, verify against `tailwind.config.js`.
-- [ ] If adding bridge endpoints, update `README.md` curl examples and `server/docker-compose.yml` if needed.
+- [ ] If adding bridge endpoints, update `README.md` curl examples and `docker-compose.yml` if needed.
 
 ## 8. Explicit Constraints (The Bouncer)
 
@@ -262,5 +255,5 @@ Read these files before making changes to their respective domains:
 - **Outgoing API contract:** `src/hooks/useWebhook.ts`, `src/types/messages.ts`, `docs/api-specification.md`
 - **Incoming API contract:** `server/index.js`, `server/normalize-message.js`, `docs/api-specification.md`
 - **Environment / secrets:** `.env.example`, `src/vite-env.d.ts`
-- **Deployment:** `Dockerfile`, `docker-compose.yml`, `nginx.conf.template`, `server/Dockerfile`, `server/docker-compose.yml`
+- **Deployment:** `Dockerfile`, `docker-compose.yml`, `nginx.conf.template`, `server/Dockerfile`
 - **Docs:** `README.md`, `docs/api-specification.md`

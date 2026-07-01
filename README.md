@@ -6,10 +6,10 @@ A developer tool for testing WhatsApp webhook integrations without needing a rea
 
 The project has two parts:
 
-| Component | Stack | Description |
-|-----------|-------|-------------|
-| **Frontend** | React + Vite + TypeScript + Tailwind | WhatsApp Web-like chat UI |
-| **Backend bridge** | Node.js + Express + WebSocket | Relays incoming messages to connected simulator clients |
+| Component          | Stack                                | Description                                             |
+| ------------------ | ------------------------------------ | ------------------------------------------------------- |
+| **Frontend**       | React + Vite + TypeScript + Tailwind | WhatsApp Web-like chat UI                               |
+| **Backend bridge** | Node.js + Express + WebSocket        | Relays incoming messages to connected simulator clients |
 
 ### Message Flow
 
@@ -26,10 +26,10 @@ The project has two parts:
   in the UI
 ```
 
-| Direction | What happens |
-|-----------|-------------|
-| **Outgoing** (user → your backend) | You type in the simulator → it POSTs a Meta Graph API-format webhook payload to your `VITE_WEBHOOK_URL`. Your backend receives it exactly as if WhatsApp sent it. |
-| **Incoming** (your backend → simulator) | Your backend POSTs to the bridge server at `POST /api/messages` → the bridge pushes the message via WebSocket to the simulator UI. |
+| Direction                               | What happens                                                                                                                                                      |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Outgoing** (user → your backend)      | You type in the simulator → it POSTs a Meta Graph API-format webhook payload to your `VITE_WEBHOOK_URL`. Your backend receives it exactly as if WhatsApp sent it. |
+| **Incoming** (your backend → simulator) | Your backend POSTs to the bridge server at `POST /api/messages` → the bridge pushes the message via WebSocket to the simulator UI.                                |
 
 ## Features
 
@@ -89,20 +89,14 @@ npm run dev
 
 All config lives in `.env` (Vite bakes `VITE_*` vars into the frontend bundle at build time).
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_WEBHOOK_URL` | Yes | Your backend's webhook endpoint (where outgoing messages are POSTed) |
-| `VITE_VERIFY_TOKEN` | Optional | Token for testing webhook verification |
-| `VITE_APP_SECRET` | Optional | Secret for computing `X-Hub-Signature-256` HMAC headers |
-| `VITE_WS_URL` | Yes | Bridge server WebSocket path (default `/api/ws`; works through Vite proxy or nginx) |
-| `VITE_USER_PHONE` | Yes | The simulator's "from" phone number (e.g. `6281234567890`) |
-| `VITE_BUSINESS_PHONE` | Yes | The business phone number being simulated (e.g. `15550000000`) |
-
-These variables are only used by Docker Compose:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `BACKEND_PORT` | `4001` | Port of the backend bridge server (used by both nginx proxy and the backend container) |
+| Variable              | Required | Description                                                                         |
+| --------------------- | -------- | ----------------------------------------------------------------------------------- |
+| `VITE_WEBHOOK_URL`    | Yes      | Your backend's webhook endpoint (where outgoing messages are POSTed)                |
+| `VITE_VERIFY_TOKEN`   | Optional | Token for testing webhook verification                                              |
+| `VITE_APP_SECRET`     | Optional | Secret for computing `X-Hub-Signature-256` HMAC headers                             |
+| `VITE_WS_URL`         | Yes      | Bridge server WebSocket path (default `/api/ws`; works through Vite proxy or nginx) |
+| `VITE_USER_PHONE`     | Yes      | The simulator's "from" phone number (e.g. `6281234567890`)                          |
+| `VITE_BUSINESS_PHONE` | Yes      | The business phone number being simulated (e.g. `15550000000`)                      |
 
 ## Using Docker Compose
 
@@ -124,10 +118,10 @@ docker compose up --build
 
 This starts two services:
 
-| Service | Container port | Host port | Description |
-|---------|---------------|-----------|-------------|
-| `frontend` | 80 | **4000** | React app served by nginx |
-| `backend` | 4001 | - | WebSocket bridge server (internal only) |
+| Service    | Container port | Host port | Description                             |
+| ---------- | -------------- | --------- | --------------------------------------- |
+| `frontend` | 80             | **4000**  | React app served by nginx               |
+| `backend`  | 3001           | -         | WebSocket bridge server (internal only) |
 
 - **Simulator UI**: [http://localhost:4000](http://localhost:4000)
 
@@ -160,17 +154,6 @@ docker compose down
 docker compose up --build
 ```
 
-### Running only the backend server (Docker)
-
-If you want to run just the bridge server in Docker (and the frontend locally with `npm run dev`):
-
-```bash
-cd server
-docker compose up --build
-```
-
-This runs the backend on port `3001` (configurable via `PORT` env var).
-
 ## Sending Replies from Your Backend
 
 To send an incoming message to the simulator, POST to the bridge server:
@@ -194,7 +177,6 @@ curl -X POST http://localhost:3001/api/messages \
 ```
 
 The payload format matches the **Meta Graph API** message structure. See `docs/api-specification.md` for full details on all message types.
-
 
 ## License
 
