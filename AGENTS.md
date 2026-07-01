@@ -235,7 +235,7 @@ Format: `<type>: <imperative, lowercase description>`.
 ## 8. Explicit Constraints (The Bouncer)
 
 - **NEVER** hardcode secrets (tokens, app secrets, passwords). Read from `import.meta.env.VITE_*` or `process.env.*` and provide fallbacks only for local dev defaults.
-- **NEVER** commit or push code automatically; always ask the user first.
+- **NEVER** commit or push code automatically. Explicitly ask the user for permission to commit or push, and only proceed after the user explicitly agrees.
 - **NEVER** mutate `localStorage` directly; use the `useLocalStorage` hook.
 - **NEVER** mutate arrays/objects in state; always return new references.
 - **ALWAYS** handle `null`/`undefined` edge cases (optional chaining, empty-string fallbacks, `Array.isArray` checks).
