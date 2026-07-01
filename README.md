@@ -154,15 +154,16 @@ docker compose down
 docker compose up --build
 ```
 
-## Sending Replies from Your Backend
+## Sending Messages to the Simulator from Your Backend
 
-To send an incoming message to the simulator, POST to the bridge server:
+When your backend wants to show a message in the simulator UI, POST to the bridge server.
 
 ```bash
 # Full app (Docker/nginx - port 4000)
 curl -X POST http://localhost:4000/api/messages \
   -H "Content-Type: application/json" \
   -d '{
+    "to": "6281234567890",
     "type": "text",
     "text": { "body": "Hello from my bot!" }
   }'
@@ -171,12 +172,15 @@ curl -X POST http://localhost:4000/api/messages \
 curl -X POST http://localhost:3001/api/messages \
   -H "Content-Type: application/json" \
   -d '{
+    "to": "6281234567890",
     "type": "text",
     "text": { "body": "Hello from my bot!" }
   }'
 ```
 
-The payload format matches the **Meta Graph API** message structure. See `docs/api-specification.md` for full details on all message types.
+Use the same `to` value as the simulator's `VITE_USER_PHONE`. If you omit `to`, the message is broadcast to every connected simulator client.
+
+The payload shape is based on the **Meta Graph API** message structure. The bridge accepts the full Cloud API shape (including `messaging_product`, `recipient_type`, and `to`), but only `type` and the message body are required. See `docs/api-specification.md` for full details on all supported message types.
 
 ## License
 
