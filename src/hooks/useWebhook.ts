@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import type { ChatConfig, Message } from '@/types/messages';
 
 export function useWebhook(config: ChatConfig) {
@@ -68,7 +67,7 @@ export function useWebhook(config: ChatConfig) {
 function buildWebhookPayload(message: Message, config: ChatConfig): Record<string, unknown> {
   const baseMessage: Record<string, unknown> = {
     from: config.userPhone,
-    id: `wamid.${uuidv4()}`,
+    id: `wamid.${crypto.randomUUID()}`,
     timestamp: getTimestamp().toString(),
   };
   switch (message.type) {
@@ -82,7 +81,7 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
         caption: message.caption || '',
         mime_type: message.mimeType || 'image/jpeg',
         sha256: 'simulated_sha256',
-        id: `MEDIA_${uuidv4()}`,
+        id: `MEDIA_${crypto.randomUUID()}`,
         url: message.mediaUrl,
       };
       break;
@@ -92,7 +91,7 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
         caption: message.caption || '',
         mime_type: message.mimeType || 'video/mp4',
         sha256: 'simulated_sha256',
-        id: `MEDIA_${uuidv4()}`,
+        id: `MEDIA_${crypto.randomUUID()}`,
         url: message.mediaUrl,
       };
       break;
@@ -101,7 +100,7 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
       baseMessage.audio = {
         mime_type: message.mimeType || 'audio/ogg; codecs=opus',
         sha256: 'simulated_sha256',
-        id: `MEDIA_${uuidv4()}`,
+        id: `MEDIA_${crypto.randomUUID()}`,
         url: message.mediaUrl,
         voice: message.voice || false,
       };
@@ -113,7 +112,7 @@ function buildWebhookPayload(message: Message, config: ChatConfig): Record<strin
         filename: message.filename || 'file',
         mime_type: message.mimeType || 'application/pdf',
         sha256: 'simulated_sha256',
-        id: `MEDIA_${uuidv4()}`,
+        id: `MEDIA_${crypto.randomUUID()}`,
         url: message.mediaUrl,
       };
       break;

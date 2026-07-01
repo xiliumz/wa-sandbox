@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { useLocalStorage } from './useLocalStorage';
 import type {
   ChatConfig,
@@ -34,7 +33,7 @@ export function useChatStore() {
 
   const sendTextMessage = useCallback((content: string) => {
     const message: TextMessage = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type: 'text',
       direction: 'outgoing',
       content,
@@ -53,7 +52,7 @@ export function useChatStore() {
     voice?: boolean
   ) => {
     const message: MediaMessage = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type,
       direction: 'outgoing',
       mediaUrl,
@@ -71,7 +70,7 @@ export function useChatStore() {
 
   const sendButtonReply = useCallback((buttonId: string, buttonTitle: string) => {
     const message: InteractiveButtonMessage = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type: 'interactive_button',
       direction: 'outgoing',
       body: { text: buttonTitle },
@@ -87,7 +86,7 @@ export function useChatStore() {
 
   const sendListReply = useCallback((rowId: string, rowTitle: string, rowDescription?: string) => {
     const message: InteractiveListMessage = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type: 'interactive_list',
       direction: 'outgoing',
       body: { text: rowTitle },
@@ -111,7 +110,7 @@ export function useChatStore() {
 
   const receiveTextMessage = useCallback((content: string) => {
     const message: TextMessage = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type: 'text',
       direction: 'incoming',
       content,
@@ -129,7 +128,7 @@ export function useChatStore() {
     filename?: string
   ) => {
     const message: MediaMessage = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type,
       direction: 'incoming',
       mediaUrl,
@@ -149,7 +148,7 @@ export function useChatStore() {
     footer?: string
   ) => {
     const message: InteractiveButtonMessage = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type: 'interactive_button',
       direction: 'incoming',
       header,
@@ -170,7 +169,7 @@ export function useChatStore() {
     footer?: string
   ) => {
     const message: InteractiveListMessage = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type: 'interactive_list',
       direction: 'incoming',
       header: headerText ? { type: 'text', text: headerText } : undefined,
