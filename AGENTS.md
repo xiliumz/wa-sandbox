@@ -118,6 +118,15 @@ docker compose up --build
 
 ## 4. Code Style & Naming Conventions (Explicit)
 
+**Development Principles**
+
+Follow these principles when working on this project:
+
+- **KISS (Keep It Simple, Stupid)** — Prefer simple solutions. Avoid unnecessary abstractions, frameworks, or configuration. If a feature can be built with plain Astro and a little TypeScript, do not add a heavier tool.
+- **YAGNI (You Aren't Gonna Need It)** — Do not implement features, components, or APIs before they are actually required. Build for the current phase, not every possible future scenario.
+- **Single Responsibility** — Each file, component, and function should do one thing well. Astro components handle UI, schema files handle validation shapes, scripts handle build-time tasks, and data files handle content. Keep concerns separated.
+- **DRY (Don't Repeat Yourself)** — Avoid duplicating logic, data, or structure. Extract reusable components, shared utilities, and common schemas so the same knowledge exists in only one place.
+
 **Formatting (inferred from existing code):**
 
 - 2-space indentation.
@@ -233,6 +242,7 @@ Format: `<type>: <imperative, lowercase description>`.
 ## 8. Explicit Constraints (The Bouncer)
 
 - **NEVER** hardcode secrets (tokens, app secrets, passwords). Read from `import.meta.env.VITE_*` or `process.env.*` and provide fallbacks only for local dev defaults.
+- **NEVER** commit or push code automatically; always ask the user first.
 - **NEVER** mutate `localStorage` directly; use the `useLocalStorage` hook.
 - **NEVER** mutate arrays/objects in state; always return new references.
 - **ALWAYS** handle `null`/`undefined` edge cases (optional chaining, empty-string fallbacks, `Array.isArray` checks).
