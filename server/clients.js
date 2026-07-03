@@ -1,27 +1,23 @@
 import { WebSocket } from 'ws';
 
-/** @type {Map<string, {ws: import('ws').WebSocket, phone: string}>} */
+/** @type {Map<WebSocket, {ws: import('ws').WebSocket, phone: string}>} */
 const clients = new Map();
 
-export function registerClient(ws, clientId, phone) {
-  const existing = clients.get(clientId);
-  if (existing && existing.ws !== ws && existing.ws.readyState === WebSocket.OPEN) {
-    console.log(`🔌 Closing stale connection for client ${clientId}`);
-    existing.ws.close();
-  }
+export function registerClient(ws, phone) {
+  ws.isAlive = true;
+  ws.on('pong', () => { ws.isAlive = true; });
 
-  clients.set(clientId, { ws, phone });
+  clients.set(ws, { ws, phone });
   console.log(
-    `🖥️  Simulator client connected (${clientId}, phone=${phone || 'none'}) — total clients: ${clients.size}`,
+    `🖥️  Simulator client connected (phone=${phone || 'none'}) — total clients: ${clients.size}`,
   );
 }
 
-export function removeClient(ws, clientId) {
-  const entry = clients.get(clientId);
-  if (entry && entry.ws === ws) {
-    clients.delete(clientId);
+export function removeClient(ws) {
+  if (clients.has(ws)) {
+    clients.delete(ws);
   }
-  console.log(`🖥️  Simulator client disconnected (${clientId}) — total clients: ${clients.size}`);
+  console.log(`🖥️  Simulator client disconnected — total clients: ${clients.size}`);
 }
 
 export function broadcastMessages(groups) {
@@ -50,15 +46,37 @@ export function broadcastMessages(groups) {
   };
 }
 
+function getHealthyClients() {
+  cleanupClients();
+  // Shallow-copy each client so callers cannot mutate the internal Map entries.
+  return Array.from(clients.values()).map((client) => ({ ...client }));
+}
+
 function cleanupClients() {
-  for (const [clientId, { ws }] of clients.entries()) {
+  for (const [ws] of clients.entries()) {
     if (ws.readyState !== WebSocket.OPEN) {
-      clients.delete(clientId);
+      clients.delete(ws);
     }
   }
 }
 
-function getHealthyClients() {
-  cleanupClients();
-  return Array.from(clients.values()).map((client) => ({ ...client }));
+export function startHeartbeat(intervalMs = 30000) {
+  return setInterval(() => {
+    for (const { ws } of Array.from(clients.values())) {
+      if (ws.readyState !== WebSocket.OPEN) {
+        clients.delete(ws);
+        continue;
+      }
+
+      if (!ws.isAlive) {
+        console.log('💀 Terminating dead client connection');
+        clients.delete(ws);
+        ws.terminate();
+        continue;
+      }
+
+      ws.isAlive = false;
+      ws.ping();
+    }
+  }, intervalMs);
 }

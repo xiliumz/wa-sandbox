@@ -17,7 +17,7 @@ export function ChatContainer() {
 
   // Real-time incoming messages via WebSocket bridge
   useWebSocket({
-    url: store.config.wsUrl || '',
+    url: '/api/ws',
     phone: store.config.userPhone,
     onMessage: (msgs: Message[]) => {
       msgs.forEach((msg) => {

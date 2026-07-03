@@ -1,4 +1,4 @@
-import { X, Save, Webhook, Globe, User } from 'lucide-react';
+import { X, Save, Webhook, User } from 'lucide-react';
 import { useState } from 'react';
 import type { ChatConfig } from '@/types/messages';
 import { VerificationTester } from './VerificationTester';
@@ -75,27 +75,6 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
               />
               <p className="text-[11px] text-gray-400 mt-1">Used to sign outgoing webhooks with X-Hub-Signature-256</p>
             </div>
-          </div>
-
-          {/* Backend API */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              <Globe size={16} className="text-whatsapp-green" />
-              Backend Reply API
-            </h3>
-
-            <div>
-              <label className={labelClass}>WebSocket URL (real-time replies)</label>
-              <input
-                type="text"
-                value={form.wsUrl}
-                onChange={(e) => setForm({ ...form, wsUrl: e.target.value })}
-                className={inputClass}
-                placeholder="ws://localhost:3001"
-              />
-              <p className="text-[11px] text-gray-400 mt-1">Backend POSTs to the bridge server, messages pushed via WebSocket</p>
-            </div>
-
           </div>
 
           {/* Identity */}

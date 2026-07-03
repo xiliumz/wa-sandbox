@@ -77,7 +77,6 @@ export interface ChatConfig {
   webhookUrl: string;
   verifyToken: string;
   appSecret: string;
-  wsUrl: string;
   userPhone: string;
   businessPhone: string;
   businessName: string;

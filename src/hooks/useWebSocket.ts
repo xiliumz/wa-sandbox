@@ -7,20 +7,11 @@ interface UseWebSocketOptions {
   onMessage: (messages: Message[]) => void;
 }
 
-function getClientId(): string {
-  let id = sessionStorage.getItem('ws_client_id');
-  if (!id) {
-    id = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    sessionStorage.setItem('ws_client_id', id);
-  }
-  return id;
-}
-
 export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
+
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onMessageRef = useRef(onMessage);
-  const clientIdRef = useRef(getClientId());
 
   onMessageRef.current = onMessage;
 
@@ -33,7 +24,6 @@ export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
         if (wsUrl.protocol === 'http:' || wsUrl.protocol === 'https:') {
           wsUrl.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         }
-        wsUrl.searchParams.set('clientId', clientIdRef.current);
         if (phone) {
           wsUrl.searchParams.set('phone', phone);
         }
@@ -56,6 +46,7 @@ export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
         };
 
         ws.onclose = () => {
+          if (wsRef.current !== ws) return;
           console.log('[WS] Disconnected, reconnecting in 3s...');
           wsRef.current = null;
           reconnectRef.current = setTimeout(connect, 3000);
@@ -73,8 +64,11 @@ export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
 
     return () => {
       if (wsRef.current) {
-        wsRef.current.close();
+        const ws = wsRef.current;
+        ws.onclose = null;
+        ws.onerror = null;
         wsRef.current = null;
+        ws.close();
       }
       if (reconnectRef.current) {
         clearTimeout(reconnectRef.current);

@@ -81,16 +81,13 @@ cd server && npm install && cd ..
 
 # Configure environment
 cp .env.example .env
-# Edit .env with your VITE_WEBHOOK_URL, VITE_WS_URL, VITE_USER_PHONE, etc.
+# Edit .env with your VITE_WEBHOOK_URL, VITE_USER_PHONE, VITE_BUSINESS_PHONE, etc.
 
-# Run frontend dev server (HMR on http://localhost:5173)
+# Run frontend + bridge server together (HMR on http://localhost:5173, bridge on http://localhost:3001)
 npm run dev
 
-# Run bridge server only (http://localhost:3001, ws://localhost:3001)
-npm run server
-
-# Run both frontend and bridge server together
-npm run dev:all
+# Run bridge server only
+node server/index.js
 
 # Type-check + production build
 npm run build
@@ -244,6 +241,9 @@ Format: `<type>: <imperative, lowercase description>`.
 - **ALWAYS** import server modules with explicit `.js` extensions (ES modules in Node).
 - **ALWAYS** use the `cn()` helper instead of string concatenation for conditional Tailwind classes.
 - **ALWAYS** update `docs/api-specification.md` when adding new message types or changing the bridge API contract.
+- **ALWAYS** classify the user's intent before acting. If the user is asking a question or seeking explanation (how something works, why a choice was made, what the code does), do **NOT** write, edit, or create files. Answer the question and offer to implement the change if relevant.
+- **NEVER** assume a question implies permission to edit. Wait for explicit approval before writing files when the user is only asking for information.
+- **ALWAYS** treat ambiguous requests as questions first: answer briefly and ask the user to confirm before making any changes.
 
 ## 9. Context Triggers
 

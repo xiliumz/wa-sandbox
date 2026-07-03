@@ -67,20 +67,20 @@ Edit `.env` — see [Configuration](#configuration) below.
 
 ### 3. Run (development)
 
-Start both the bridge server and the frontend dev server:
+Start the simulator (this runs both the bridge server and the frontend dev server):
 
 ```bash
-npm run dev:all
+npm run dev
 ```
 
 Or run them separately:
 
 ```bash
 # Terminal 1 — bridge server (port 3001)
-npm run server
+node server/index.js
 
 # Terminal 2 — frontend dev server (port 5173)
-npm run dev
+npx vite
 ```
 
 - **Simulator UI**: [http://localhost:5173](http://localhost:5173)
@@ -94,7 +94,6 @@ All config lives in `.env` (Vite bakes `VITE_*` vars into the frontend bundle at
 | `VITE_WEBHOOK_URL`    | Yes      | Your backend's webhook endpoint (where outgoing messages are POSTed)                |
 | `VITE_VERIFY_TOKEN`   | Optional | Token for testing webhook verification                                              |
 | `VITE_APP_SECRET`     | Optional | Secret for computing `X-Hub-Signature-256` HMAC headers                             |
-| `VITE_WS_URL`         | Yes      | Bridge server WebSocket path (default `/api/ws`; works through Vite proxy or nginx) |
 | `VITE_USER_PHONE`     | Yes      | The simulator's "from" phone number (e.g. `6281234567890`)                          |
 | `VITE_BUSINESS_PHONE` | Yes      | The business phone number being simulated (e.g. `15550000000`)                      |
 
