@@ -23,7 +23,7 @@ export function createMessagesRouter() {
       `✅ Delivered to ${deliveredClientCount}/${totalClientCount} client(s), ${deliveredMessageCount} message(s) total`,
     );
 
-    res.sendStatus(200);
+    res.status(200).json({ success: true });
   };
 }
 
