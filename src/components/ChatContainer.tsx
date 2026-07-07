@@ -14,10 +14,12 @@ export function ChatContainer() {
   const store = useChatStore();
   const { sendWebhook } = useWebhook(store.config);
   const [activeListMessageId, setActiveListMessageId] = useState<string | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isInjectorOpen, setIsInjectorOpen] = useState(false);
 
   // Real-time incoming messages via WebSocket bridge
   useWebSocket({
-    url: '/api/ws',
+    url: './api/ws',
     phone: store.config.userPhone,
     onMessage: (msgs: Message[]) => {
       msgs.forEach((msg) => {
@@ -93,8 +95,8 @@ export function ChatContainer() {
       <ChatHeader
         businessName={store.config.businessName}
         businessPhone={store.config.businessPhone}
-        onOpenSettings={() => store.setIsSettingsOpen(true)}
-        onOpenInjector={() => store.setIsInjectorOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenInjector={() => setIsInjectorOpen(true)}
         onClearChat={store.clearChat}
       />
 
@@ -112,15 +114,15 @@ export function ChatContainer() {
       />
 
       <SettingsPanel
-        isOpen={store.isSettingsOpen}
-        onClose={() => store.setIsSettingsOpen(false)}
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
         config={store.config}
         onSave={store.setConfig}
       />
 
       <MessageInjector
-        isOpen={store.isInjectorOpen}
-        onClose={() => store.setIsInjectorOpen(false)}
+        isOpen={isInjectorOpen}
+        onClose={() => setIsInjectorOpen(false)}
         onInjectText={store.receiveTextMessage}
         onInjectMedia={store.receiveMediaMessage}
         onInjectButton={store.receiveInteractiveButton}
