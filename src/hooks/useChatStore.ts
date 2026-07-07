@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import type {
   ChatConfig,
@@ -24,8 +24,6 @@ export function useChatStore() {
     getInitialChatConfig,
   );
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isInjectorOpen, setIsInjectorOpen] = useState(false);
 
   const addMessage = useCallback((message: Message) => {
     setMessages((prev) => [...prev, message]);
@@ -191,10 +189,6 @@ export function useChatStore() {
     messages,
     config,
     setConfig,
-    isSettingsOpen,
-    setIsSettingsOpen,
-    isInjectorOpen,
-    setIsInjectorOpen,
     addMessage,
     sendTextMessage,
     sendMediaMessage,
