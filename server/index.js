@@ -4,7 +4,7 @@ import { createServer } from 'http';
 import cors from 'cors';
 import { URL } from 'url';
 import { registerClient, removeClient, startHeartbeat } from './clients.js';
-import { createMessagesRouter } from './routes/messages.js';
+import { messagesController } from './routes/messages.js';
 
 const app = express();
 const server = createServer(app);
@@ -36,7 +36,7 @@ wss.on('close', () => {
   clearInterval(heartbeatInterval);
 });
 
-app.post('/api/messages', createMessagesRouter());
+app.post('/api/messages', messagesController);
 
 server.listen(PORT, () => {
   console.log(`📥 POST replies to: http://localhost:${PORT}/api/messages`);
