@@ -8,6 +8,7 @@ import { ListSelectionModal } from './ListSelectionModal';
 import { useChatStore } from '@/hooks/useChatStore';
 import { useWebhook } from '@/hooks/useWebhook';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { findActiveListMessage } from '@/utils/find-active-list-message';
 import type { Message, MediaType } from '@/types/messages';
 
 export function ChatContainer() {
@@ -31,10 +32,7 @@ export function ChatContainer() {
     },
   });
 
-  const activeListMessage = store.messages.find(
-    (m): m is Message & { type: 'interactive_list' } =>
-      m.id === activeListMessageId && m.type === 'interactive_list'
-  ) || null;
+  const activeListMessage = findActiveListMessage(store.messages, activeListMessageId);
 
   const handleSendText = useCallback(
     async (text: string) => {
