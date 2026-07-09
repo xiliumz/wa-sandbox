@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import type {
-  ChatConfig,
   Message,
   TextMessage,
   MediaMessage,
@@ -11,19 +10,9 @@ import type {
   InteractiveButtonOption,
   InteractiveListSection,
 } from '@/types/messages';
-import { DEFAULT_CONFIG } from '@/constants/config';
 
-function getInitialChatConfig(stored: ChatConfig | null): ChatConfig {
-  return stored ? { ...DEFAULT_CONFIG, ...stored } : DEFAULT_CONFIG;
-}
-
-export function useChatStore() {
+export function useMessageStore() {
   const [messages, setMessages] = useLocalStorage<Message[]>('wa-chat-messages', []);
-  const [config, setConfig] = useLocalStorage<ChatConfig>(
-    'wa-chat-config',
-    getInitialChatConfig,
-  );
-
 
   const addMessage = useCallback((message: Message) => {
     setMessages((prev) => [...prev, message]);
@@ -187,8 +176,6 @@ export function useChatStore() {
 
   return {
     messages,
-    config,
-    setConfig,
     addMessage,
     sendTextMessage,
     sendMediaMessage,

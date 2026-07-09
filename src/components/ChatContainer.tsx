@@ -5,7 +5,8 @@ import { ChatInput } from './ChatInput';
 import { SettingsPanel } from './SettingsPanel';
 import { MessageInjector } from './MessageInjector';
 import { ListSelectionModal } from './ListSelectionModal';
-import { useChatStore } from '@/hooks/useChatStore';
+import { useMessageStore } from '@/hooks/useMessageStore';
+import { useConfigStore } from '@/hooks/useConfigStore';
 import { useWebhook } from '@/hooks/useWebhook';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useMessageSender } from '@/hooks/useMessageSender';
@@ -13,8 +14,9 @@ import { findActiveListMessage } from '@/utils/find-active-list-message';
 import type { Message } from '@/types/messages';
 
 export function ChatContainer() {
-  const store = useChatStore();
-  const { postWebhook } = useWebhook(store.config);
+  const messageStore = useMessageStore();
+  const configStore = useConfigStore();
+  const { postWebhook } = useWebhook(configStore.config);
   const [activeListMessageId, setActiveListMessageId] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInjectorOpen, setIsInjectorOpen] = useState(false);
@@ -22,18 +24,18 @@ export function ChatContainer() {
   // Real-time incoming messages via WebSocket bridge
   useWebSocket({
     url: './api/ws',
-    phone: store.config.userPhone,
+    phone: configStore.config.userPhone,
     onMessage: (msgs: Message[]) => {
       msgs.forEach((msg) => {
-        const exists = store.messages.find((m) => m.id === msg.id);
+        const exists = messageStore.messages.find((m) => m.id === msg.id);
         if (!exists) {
-          store.addMessage({ ...msg, direction: 'incoming', status: 'read' });
+          messageStore.addMessage({ ...msg, direction: 'incoming', status: 'read' });
         }
       });
     },
   });
 
-  const activeListMessage = findActiveListMessage(store.messages, activeListMessageId);
+  const activeListMessage = findActiveListMessage(messageStore.messages, activeListMessageId);
 
   const {
     handleSendText,
@@ -43,26 +45,26 @@ export function ChatContainer() {
     handleListSelect,
   } = useMessageSender({
     postWebhook,
-    updateMessageStatus: store.updateMessageStatus,
-    sendTextMessage: store.sendTextMessage,
-    sendMediaMessage: store.sendMediaMessage,
-    sendButtonReply: store.sendButtonReply,
-    sendListReply: store.sendListReply,
+    updateMessageStatus: messageStore.updateMessageStatus,
+    sendTextMessage: messageStore.sendTextMessage,
+    sendMediaMessage: messageStore.sendMediaMessage,
+    sendButtonReply: messageStore.sendButtonReply,
+    sendListReply: messageStore.sendListReply,
     onListClose: () => setActiveListMessageId(null),
   });
 
   return (
     <div className="flex flex-col h-screen max-h-screen bg-whatsapp-bg">
       <ChatHeader
-        businessName={store.config.businessName}
-        businessPhone={store.config.businessPhone}
+        businessName={configStore.config.businessName}
+        businessPhone={configStore.config.businessPhone}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenInjector={() => setIsInjectorOpen(true)}
-        onClearChat={store.clearChat}
+        onClearChat={messageStore.clearChat}
       />
 
       <MessageList
-        messages={store.messages}
+        messages={messageStore.messages}
         onButtonClick={handleButtonClick}
         onOpenList={setActiveListMessageId}
       />
@@ -77,17 +79,17 @@ export function ChatContainer() {
       <SettingsPanel
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        config={store.config}
-        onSave={store.setConfig}
+        config={configStore.config}
+        onSave={configStore.setConfig}
       />
 
       <MessageInjector
         isOpen={isInjectorOpen}
         onClose={() => setIsInjectorOpen(false)}
-        onInjectText={store.receiveTextMessage}
-        onInjectMedia={store.receiveMediaMessage}
-        onInjectButton={store.receiveInteractiveButton}
-        onInjectList={store.receiveInteractiveList}
+        onInjectText={messageStore.receiveTextMessage}
+        onInjectMedia={messageStore.receiveMediaMessage}
+        onInjectButton={messageStore.receiveInteractiveButton}
+        onInjectList={messageStore.receiveInteractiveList}
       />
 
       <ListSelectionModal
