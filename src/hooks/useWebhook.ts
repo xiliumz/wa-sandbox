@@ -3,7 +3,7 @@ import type { ChatConfig, Message } from '@/types/messages';
 
 export function useWebhook(config: ChatConfig) {
 
-  const sendWebhook = useCallback(async (message: Message): Promise<boolean> => {
+  const postWebhook = useCallback(async (message: Message): Promise<boolean> => {
     if (!config.webhookUrl) return false;
 
     const payload = buildWebhookPayload(message, config);
@@ -32,7 +32,7 @@ export function useWebhook(config: ChatConfig) {
     }
   }, [config]);
 
-  return { sendWebhook };
+  return { postWebhook };
 }
 
 function buildWebhookPayload(message: Message, config: ChatConfig): Record<string, unknown> {
