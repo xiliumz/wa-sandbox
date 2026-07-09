@@ -20,13 +20,17 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
     onClose();
   };
 
-  const inputClass = "w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green focus:border-transparent bg-white";
-  const labelClass = "block text-xs font-medium text-gray-600 mb-1";
+  const inputClass = 'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg'
+    + ' focus:outline-none focus:ring-2 focus:ring-whatsapp-green focus:border-transparent bg-white';
+  const labelClass = 'block text-xs font-medium text-gray-600 mb-1';
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right-10">
+      <div
+        className="relative w-full max-w-md bg-white h-full shadow-2xl
+        flex flex-col animate-in slide-in-from-right-10"
+      >
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-800">Settings</h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
@@ -126,7 +130,9 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
           />
           <button
             onClick={handleSave}
-            className="w-full flex items-center justify-center gap-2 bg-whatsapp-green text-white py-2.5 rounded-lg font-medium text-sm hover:bg-whatsapp-green-dark transition-colors"
+            className="w-full flex items-center justify-center gap-2
+            bg-whatsapp-green text-white py-2.5 rounded-lg font-medium text-sm
+            hover:bg-whatsapp-green-dark transition-colors"
           >
             <Save size={16} />
             Save Configuration

@@ -32,7 +32,7 @@ export function TextBubble({ content, direction, timestamp, status }: TextBubble
           'max-w-[75%] rounded-lg px-3 py-2 shadow-sm relative',
           isOutgoing
             ? 'bg-whatsapp-bubble-outgoing rounded-tr-none'
-            : 'bg-whatsapp-bubble-incoming rounded-tl-none'
+            : 'bg-whatsapp-bubble-incoming rounded-tl-none',
         )}
       >
         <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{content}</p>

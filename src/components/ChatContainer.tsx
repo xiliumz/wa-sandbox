@@ -40,7 +40,7 @@ export function ChatContainer() {
       const success = await sendWebhook(message);
       store.updateMessageStatus(message.id, success ? 'sent' : 'failed');
     },
-    [store, sendWebhook]
+    [store, sendWebhook],
   );
 
   const handleSendMedia = useCallback(
@@ -55,7 +55,7 @@ export function ChatContainer() {
         store.updateMessageStatus(message.id, success ? 'sent' : 'failed');
       }
     },
-    [store, sendWebhook]
+    [store, sendWebhook],
   );
 
   const handleSendVoice = useCallback(
@@ -66,7 +66,7 @@ export function ChatContainer() {
       const success = await sendWebhook(message);
       store.updateMessageStatus(message.id, success ? 'sent' : 'failed');
     },
-    [store, sendWebhook]
+    [store, sendWebhook],
   );
 
   const handleButtonClick = useCallback(
@@ -75,7 +75,7 @@ export function ChatContainer() {
       const success = await sendWebhook(message);
       store.updateMessageStatus(message.id, success ? 'sent' : 'failed');
     },
-    [store, sendWebhook]
+    [store, sendWebhook],
   );
 
   const handleListSelect = useCallback(
@@ -85,7 +85,7 @@ export function ChatContainer() {
       store.updateMessageStatus(message.id, success ? 'sent' : 'failed');
       setActiveListMessageId(null);
     },
-    [store, sendWebhook]
+    [store, sendWebhook],
   );
 
   return (

@@ -180,7 +180,10 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
     <div className="bg-[#f0f2f5] px-4 py-2 relative">
       {/* Media file preview */}
       {hasPreview && (
-        <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-lg shadow-lg p-3 border border-gray-200 max-h-80 overflow-y-auto">
+        <div
+          className="absolute bottom-full left-4 right-4 mb-2 bg-white
+            rounded-lg shadow-lg p-3 border border-gray-200 max-h-80 overflow-y-auto"
+        >
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700 capitalize">
               {previewFiles.length} {previewType}{previewFiles.length > 1 ? 's' : ''} selected
@@ -201,7 +204,9 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
                   />
                   <button
                     onClick={() => removePreview(i)}
-                    className="absolute top-1 right-1 p-1 bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1 right-1 p-1 bg-black/50
+                    rounded-full text-white opacity-0 group-hover:opacity-100
+                    transition-opacity"
                   >
                     <X size={12} />
                   </button>
@@ -256,7 +261,9 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
               value={mediaCaption}
               onChange={(e) => setMediaCaption(e.target.value)}
               placeholder="Add a caption..."
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-whatsapp-green focus:border-transparent bg-gray-50"
+              className="w-full px-3 py-2 text-sm border border-gray-200
+              rounded-lg outline-none focus:ring-2 focus:ring-whatsapp-green
+              focus:border-transparent bg-gray-50"
               onKeyDown={handleKeyDown}
             />
           </div>
@@ -271,7 +278,7 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
               onClick={() => setShowAttach(!showAttach)}
               className={cn(
                 'p-2 rounded-full transition-colors mb-1',
-                showAttach ? 'bg-gray-300 text-gray-700' : 'text-gray-500 hover:bg-gray-200'
+                showAttach ? 'bg-gray-300 text-gray-700' : 'text-gray-500 hover:bg-gray-200',
               )}
               disabled={disabled}
             >
@@ -279,12 +286,16 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
             </button>
 
             {showAttach && (
-              <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-[160px]">
+              <div
+                className="absolute bottom-full left-0 mb-2 bg-white
+                rounded-lg shadow-xl border border-gray-200 py-2 min-w-[160px]"
+              >
                 {attachOptions.map((opt) => (
                   <button
                     key={opt.type}
                     onClick={() => handleFileSelect(opt.type, opt.accept)}
-                    className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 w-full px-4 py-2
+                    text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     {opt.icon}
                     {opt.label}
@@ -334,7 +345,8 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
             </button>
             <button
               onClick={stopRecording}
-              className="p-2 rounded-full mb-1 bg-white text-gray-700 hover:bg-gray-100 transition-colors border border-gray-200"
+              className="p-2 rounded-full mb-1 bg-white text-gray-700
+              hover:bg-gray-100 transition-colors border border-gray-200"
               title="Stop recording"
             >
               <Square size={20} className="fill-current" />
@@ -345,7 +357,7 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
             onClick={handleSend}
             className={cn(
               'p-2 rounded-full mb-1 transition-colors',
-              'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark'
+              'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark',
             )}
           >
             <Send size={20} />
@@ -355,7 +367,7 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
             onClick={startRecording}
             disabled={disabled}
             className={cn(
-              'p-2 rounded-full mb-1 transition-colors text-gray-500 hover:bg-gray-200'
+              'p-2 rounded-full mb-1 transition-colors text-gray-500 hover:bg-gray-200',
             )}
             title="Record voice message"
           >

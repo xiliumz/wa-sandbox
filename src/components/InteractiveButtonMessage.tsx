@@ -53,8 +53,9 @@ export function InteractiveButtonMessageCard({ message, onButtonClick }: Interac
               key={button.id}
               onClick={() => onButtonClick(button.id, button.title)}
               className={cn(
-                'w-full flex items-center justify-center gap-2 py-3 px-4 text-whatsapp-green font-medium text-sm hover:bg-gray-50 transition-colors',
-                index !== buttons.length - 1 && 'border-b border-gray-100'
+                'w-full flex items-center justify-center gap-2 py-3 px-4',
+                'text-whatsapp-green font-medium text-sm hover:bg-gray-50 transition-colors',
+                index !== buttons.length - 1 && 'border-b border-gray-100',
               )}
             >
               <Reply size={16} />

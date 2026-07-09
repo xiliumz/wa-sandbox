@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
  */
 export function useLocalStorage<T>(
   key: string,
-  initialValue: T | ((stored: T | null) => T)
+  initialValue: T | ((stored: T | null) => T),
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const resolveInitial = (stored: T | null): T => {
     return typeof initialValue === 'function'

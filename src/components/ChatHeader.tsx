@@ -24,7 +24,10 @@ export function ChatHeader({
           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg font-semibold">
             {businessName.charAt(0).toUpperCase()}
           </div>
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-whatsapp-green-dark" />
+          <div
+            className="absolute bottom-0 right-0 w-3 h-3 bg-green-400
+            rounded-full border-2 border-whatsapp-green-dark"
+          />
         </div>
         <div className="flex flex-col">
           <span className="font-semibold text-sm leading-tight">{businessName}</span>

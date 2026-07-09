@@ -73,17 +73,21 @@ function AudioPlayer({ url, isOutgoing }: { url: string; isOutgoing: boolean }) 
           'w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors',
           isOutgoing
             ? 'bg-white/30 text-white hover:bg-white/40'
-            : 'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark'
+            : 'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark',
         )}
       >
-        {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+        {isPlaying ? (
+          <Pause size={14} fill="currentColor" />
+        ) : (
+          <Play size={14} fill="currentColor" className="ml-0.5" />
+        )}
       </button>
       <div className="flex-1 flex flex-col gap-1">
         <div className="relative h-1 rounded-full bg-black/10 overflow-hidden">
           <div
             className={cn(
               'absolute top-0 left-0 h-full rounded-full transition-all',
-              isOutgoing ? 'bg-white/70' : 'bg-whatsapp-green'
+              isOutgoing ? 'bg-white/70' : 'bg-whatsapp-green',
             )}
             style={{ width: `${progress}%` }}
           />
@@ -172,7 +176,7 @@ export function MediaBubble({ message }: MediaBubbleProps) {
           'max-w-[75%] rounded-lg shadow-sm overflow-hidden relative',
           isOutgoing
             ? 'bg-whatsapp-bubble-outgoing rounded-tr-none'
-            : 'bg-whatsapp-bubble-incoming rounded-tl-none'
+            : 'bg-whatsapp-bubble-incoming rounded-tl-none',
         )}
       >
         {renderMedia()}

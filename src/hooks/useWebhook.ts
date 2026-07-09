@@ -32,7 +32,12 @@ export function useWebhook(config: ChatConfig) {
     }
   }, [config]);
 
-  const testVerification = useCallback(async (): Promise<{ success: boolean; status: number; responseText: string; url: string }> => {
+  const testVerification = useCallback(async (): Promise<{
+    success: boolean;
+    status: number;
+    responseText: string;
+    url: string;
+  }> => {
     if (!config.webhookUrl) {
       return { success: false, status: 0, responseText: 'No webhook URL configured', url: '' };
     }
@@ -180,7 +185,7 @@ async function computeSignature(body: string, secret: string): Promise<string> {
     encoder.encode(secret),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ['sign']
+    ['sign'],
   );
   const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(body));
   const bytes = new Uint8Array(signature);

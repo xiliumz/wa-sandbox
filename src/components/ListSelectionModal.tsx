@@ -20,7 +20,10 @@ export function ListSelectionModal({ message, isOpen, onClose, onSelect }: ListS
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white w-full max-w-sm mx-4 sm:rounded-xl rounded-t-xl shadow-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom-10">
+      <div
+        className="relative bg-white w-full max-w-sm mx-4 sm:rounded-xl
+        rounded-t-xl shadow-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom-10"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
           <h3 className="font-semibold text-gray-800">{message.header?.text || 'Options'}</h3>

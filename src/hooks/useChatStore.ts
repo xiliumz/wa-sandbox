@@ -47,7 +47,7 @@ export function useChatStore() {
     mediaUrl: string,
     file: File,
     caption?: string,
-    voice?: boolean
+    voice?: boolean,
   ) => {
     const message: MediaMessage = {
       id: crypto.randomUUID(),
@@ -102,7 +102,7 @@ export function useChatStore() {
 
   const updateMessageStatus = useCallback((id: string, status: Message['status']) => {
     setMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, status } : m))
+      prev.map((m) => (m.id === id ? { ...m, status } : m)),
     );
   }, [setMessages]);
 
@@ -123,7 +123,7 @@ export function useChatStore() {
     mediaUrl: string,
     caption?: string,
     mimeType?: string,
-    filename?: string
+    filename?: string,
   ) => {
     const message: MediaMessage = {
       id: crypto.randomUUID(),
@@ -143,7 +143,7 @@ export function useChatStore() {
     body: string,
     buttons: InteractiveButtonOption[],
     header?: { type: 'text' | 'image' | 'video' | 'document'; text?: string; mediaUrl?: string },
-    footer?: string
+    footer?: string,
   ) => {
     const message: InteractiveButtonMessage = {
       id: crypto.randomUUID(),
@@ -164,7 +164,7 @@ export function useChatStore() {
     buttonText: string,
     sections: InteractiveListSection[],
     headerText?: string,
-    footer?: string
+    footer?: string,
   ) => {
     const message: InteractiveListMessage = {
       id: crypto.randomUUID(),

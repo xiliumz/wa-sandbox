@@ -78,7 +78,7 @@ export function VerificationTester({ webhookUrl, verifyToken }: VerificationTest
             'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
             result.loading
               ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-              : 'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark'
+              : 'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark',
           )}
         >
           {result.loading ? 'Testing...' : 'Test Verification'}
@@ -86,7 +86,8 @@ export function VerificationTester({ webhookUrl, verifyToken }: VerificationTest
 
         <button
           onClick={handleCopy}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 hover:bg-gray-100 transition-colors text-gray-600"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+          font-medium border border-gray-200 hover:bg-gray-100 transition-colors text-gray-600"
         >
           {copied ? <Check size={14} /> : <Copy size={14} />}
           {copied ? 'Copied' : 'Copy URL'}
@@ -119,7 +120,7 @@ export function VerificationTester({ webhookUrl, verifyToken }: VerificationTest
           'p-3 rounded-lg border text-sm',
           result.success
             ? 'bg-green-50 border-green-200 text-green-700'
-            : 'bg-yellow-50 border-yellow-200 text-yellow-700'
+            : 'bg-yellow-50 border-yellow-200 text-yellow-700',
         )}>
           <p className="font-medium mb-1">
             {result.success ? '✅ Verification Successful' : '⚠️ Verification Failed'}

@@ -36,7 +36,8 @@ export function InteractiveListMessageCard({ message, onOpenList }: InteractiveL
 
         <button
           onClick={() => onOpenList(id)}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 text-whatsapp-green font-medium text-sm hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-3 px-4
+          text-whatsapp-green font-medium text-sm hover:bg-gray-50 transition-colors"
         >
           <List size={16} />
           {buttonText}

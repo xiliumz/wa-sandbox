@@ -16,14 +16,14 @@ interface MessageInjectorProps {
     body: string,
     buttons: InteractiveButtonOption[],
     header?: { type: 'text'; text: string },
-    footer?: string
+    footer?: string,
   ) => void;
   onInjectList: (
     body: string,
     buttonText: string,
     sections: InteractiveListSection[],
     headerText?: string,
-    footer?: string
+    footer?: string,
   ) => void;
 }
 
@@ -101,7 +101,7 @@ export function MessageInjector({
         buttonBody.trim(),
         buttons,
         buttonHeader.trim() ? { type: 'text', text: buttonHeader.trim() } : undefined,
-        buttonFooter.trim() || undefined
+        buttonFooter.trim() || undefined,
       );
       onClose();
     }
@@ -114,7 +114,7 @@ export function MessageInjector({
         listButtonText.trim() || 'Select Option',
         sections,
         listHeader.trim() || undefined,
-        listFooter.trim() || undefined
+        listFooter.trim() || undefined,
       );
       onClose();
     }
@@ -158,7 +158,7 @@ export function MessageInjector({
     sectionIndex: number,
     rowIndex: number,
     field: 'id' | 'title' | 'description',
-    value: string
+    value: string,
   ) => {
     const updated = [...sections];
     updated[sectionIndex].rows[rowIndex] = {
@@ -177,8 +177,9 @@ export function MessageInjector({
     setSections(updated);
   };
 
-  const inputClass = "w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green focus:border-transparent bg-white";
-  const labelClass = "block text-xs font-medium text-gray-600 mb-1";
+  const inputClass = 'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg'
+    + ' focus:outline-none focus:ring-2 focus:ring-whatsapp-green focus:border-transparent bg-white';
+  const labelClass = 'block text-xs font-medium text-gray-600 mb-1';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -201,7 +202,7 @@ export function MessageInjector({
                 'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors',
                 activeTab === tab.id
                   ? 'border-whatsapp-green text-whatsapp-green'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-700',
               )}
             >
               {tab.icon}
@@ -242,7 +243,7 @@ export function MessageInjector({
                         'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm border transition-colors',
                         mediaType === opt.type
                           ? 'border-whatsapp-green bg-green-50 text-whatsapp-green'
-                          : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                          : 'border-gray-200 hover:bg-gray-50 text-gray-600',
                       )}
                     >
                       {opt.icon}
@@ -342,7 +343,8 @@ export function MessageInjector({
                   {buttons.length < 3 && (
                     <button
                       onClick={addButton}
-                      className="flex items-center gap-1.5 text-sm text-whatsapp-green hover:text-whatsapp-green-dark transition-colors"
+                      className="flex items-center gap-1.5 text-sm
+                      text-whatsapp-green hover:text-whatsapp-green-dark transition-colors"
                     >
                       <Plus size={14} />
                       Add Button
@@ -450,7 +452,8 @@ export function MessageInjector({
                       ))}
                       <button
                         onClick={() => addRow(sectionIndex)}
-                        className="flex items-center gap-1.5 text-xs text-whatsapp-green hover:text-whatsapp-green-dark transition-colors"
+                        className="flex items-center gap-1.5 text-xs
+                        text-whatsapp-green hover:text-whatsapp-green-dark transition-colors"
                       >
                         <Plus size={12} />
                         Add Row
@@ -460,7 +463,8 @@ export function MessageInjector({
                 ))}
                 <button
                   onClick={addSection}
-                  className="flex items-center gap-1.5 text-sm text-whatsapp-green hover:text-whatsapp-green-dark transition-colors"
+                  className="flex items-center gap-1.5 text-sm
+                  text-whatsapp-green hover:text-whatsapp-green-dark transition-colors"
                 >
                   <Plus size={14} />
                   Add Section
@@ -478,7 +482,8 @@ export function MessageInjector({
               if (activeTab === 'button') handleInjectButton();
               if (activeTab === 'list') handleInjectList();
             }}
-            className="w-full bg-whatsapp-green text-white py-2.5 rounded-lg font-medium text-sm hover:bg-whatsapp-green-dark transition-colors"
+            className="w-full bg-whatsapp-green text-white py-2.5 rounded-lg
+            font-medium text-sm hover:bg-whatsapp-green-dark transition-colors"
           >
             Inject Message
           </button>
