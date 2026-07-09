@@ -32,41 +32,7 @@ export function useWebhook(config: ChatConfig) {
     }
   }, [config]);
 
-  const testVerification = useCallback(async (): Promise<{
-    success: boolean;
-    status: number;
-    responseText: string;
-    url: string;
-  }> => {
-    if (!config.webhookUrl) {
-      return { success: false, status: 0, responseText: 'No webhook URL configured', url: '' };
-    }
-
-    const url = new URL(config.webhookUrl);
-    url.searchParams.set('hub.mode', 'subscribe');
-    url.searchParams.set('hub.verify_token', config.verifyToken);
-    url.searchParams.set('hub.challenge', '1158201444');
-
-    try {
-      const response = await fetch(url.toString(), { method: 'GET' });
-      const text = await response.text();
-      return {
-        success: response.ok && text === '1158201444',
-        status: response.status,
-        responseText: text,
-        url: url.toString(),
-      };
-    } catch (error) {
-      return {
-        success: false,
-        status: 0,
-        responseText: error instanceof Error ? error.message : 'Unknown error',
-        url: url.toString(),
-      };
-    }
-  }, [config]);
-
-  return { sendWebhook, testVerification };
+  return { sendWebhook };
 }
 
 function buildWebhookPayload(message: Message, config: ChatConfig): Record<string, unknown> {
