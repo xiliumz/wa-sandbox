@@ -17,11 +17,11 @@ export function ChatContainer() {
   const messageStore = useMessageStore();
   const configStore = useConfigStore();
   const { postWebhook } = useWebhook(configStore.config);
+
   const [activeListMessageId, setActiveListMessageId] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInjectorOpen, setIsInjectorOpen] = useState(false);
 
-  // Real-time incoming messages via WebSocket bridge
   useWebSocket({
     url: './api/ws',
     phone: configStore.config.userPhone,
@@ -46,10 +46,7 @@ export function ChatContainer() {
   } = useMessageSender({
     postWebhook,
     updateMessageStatus: messageStore.updateMessageStatus,
-    sendTextMessage: messageStore.sendTextMessage,
-    sendMediaMessage: messageStore.sendMediaMessage,
-    sendButtonReply: messageStore.sendButtonReply,
-    sendListReply: messageStore.sendListReply,
+    addMessage: messageStore.addMessage,
     onListClose: () => setActiveListMessageId(null),
   });
 
@@ -73,7 +70,6 @@ export function ChatContainer() {
         onSendText={handleSendText}
         onSendMedia={handleSendMedia}
         onSendVoice={handleSendVoice}
-        disabled={false}
       />
 
       <SettingsPanel
@@ -86,10 +82,7 @@ export function ChatContainer() {
       <MessageInjector
         isOpen={isInjectorOpen}
         onClose={() => setIsInjectorOpen(false)}
-        onInjectText={messageStore.receiveTextMessage}
-        onInjectMedia={messageStore.receiveMediaMessage}
-        onInjectButton={messageStore.receiveInteractiveButton}
-        onInjectList={messageStore.receiveInteractiveList}
+        onInjectMessage={messageStore.addMessage}
       />
 
       <ListSelectionModal

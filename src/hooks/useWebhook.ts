@@ -1,8 +1,12 @@
 import { useCallback } from 'react';
 import type { ChatConfig, Message } from '@/types/messages';
 
-export function useWebhook(config: ChatConfig) {
+interface WebhookApi {
+  /** Send a message to the configured webhook URL as a Meta-format payload. */
+  postWebhook: (message: Message) => Promise<boolean>;
+}
 
+export function useWebhook(config: ChatConfig): WebhookApi {
   const postWebhook = useCallback(async (message: Message): Promise<boolean> => {
     if (!config.webhookUrl) return false;
 
