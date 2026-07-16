@@ -2,6 +2,7 @@ import { X, Save, Webhook, User } from 'lucide-react';
 import { useState } from 'react';
 import type { ChatConfig } from '@/types/messages';
 import { VerificationTester } from './VerificationTester';
+import { Field } from './Field';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -20,17 +21,11 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
     onClose();
   };
 
-  const inputClass = 'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg'
-    + ' focus:outline-none focus:ring-2 focus:ring-whatsapp-green focus:border-transparent bg-white';
-  const labelClass = 'block text-xs font-medium text-gray-600 mb-1';
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div
-        className="relative w-full max-w-md bg-white h-full shadow-2xl
-        flex flex-col animate-in slide-in-from-right-10"
-      >
+      <div className="relative w-full max-w-md bg-white h-full shadow-2xl
+        flex flex-col animate-in slide-in-from-right-10">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-800">Settings</h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
@@ -46,39 +41,26 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
               Webhook Configuration
             </h3>
 
-            <div>
-              <label className={labelClass}>Webhook URL (POST)</label>
-              <input
-                type="text"
-                value={form.webhookUrl}
-                onChange={(e) => setForm({ ...form, webhookUrl: e.target.value })}
-                className={inputClass}
-                placeholder="http://localhost:3000/webhook"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>Verify Token</label>
-              <input
-                type="text"
-                value={form.verifyToken}
-                onChange={(e) => setForm({ ...form, verifyToken: e.target.value })}
-                className={inputClass}
-                placeholder="your_verify_token"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>App Secret (for webhook signature)</label>
-              <input
-                type="password"
-                value={form.appSecret}
-                onChange={(e) => setForm({ ...form, appSecret: e.target.value })}
-                className={inputClass}
-                placeholder="your_app_secret"
-              />
-              <p className="text-[11px] text-gray-400 mt-1">Used to sign outgoing webhooks with X-Hub-Signature-256</p>
-            </div>
+            <Field
+              label="Webhook URL (POST)"
+              value={form.webhookUrl}
+              onChange={(v) => setForm({ ...form, webhookUrl: v })}
+              placeholder="http://localhost:3000/webhook"
+            />
+            <Field
+              label="Verify Token"
+              value={form.verifyToken}
+              onChange={(v) => setForm({ ...form, verifyToken: v })}
+              placeholder="your_verify_token"
+            />
+            <Field
+              label="App Secret (for webhook signature)"
+              type="password"
+              value={form.appSecret}
+              onChange={(v) => setForm({ ...form, appSecret: v })}
+              placeholder="your_app_secret"
+              description="Used to sign outgoing webhooks with X-Hub-Signature-256"
+            />
           </div>
 
           {/* Identity */}
@@ -88,38 +70,24 @@ export function SettingsPanel({ isOpen, onClose, config, onSave }: SettingsPanel
               Simulator Identity
             </h3>
 
-            <div>
-              <label className={labelClass}>User Phone Number</label>
-              <input
-                type="text"
-                value={form.userPhone}
-                onChange={(e) => setForm({ ...form, userPhone: e.target.value })}
-                className={inputClass}
-                placeholder="6281234567890"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>Business Phone Number</label>
-              <input
-                type="text"
-                value={form.businessPhone}
-                onChange={(e) => setForm({ ...form, businessPhone: e.target.value })}
-                className={inputClass}
-                placeholder="15550000000"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>Business Name</label>
-              <input
-                type="text"
-                value={form.businessName}
-                onChange={(e) => setForm({ ...form, businessName: e.target.value })}
-                className={inputClass}
-                placeholder="Business Account"
-              />
-            </div>
+            <Field
+              label="User Phone Number"
+              value={form.userPhone}
+              onChange={(v) => setForm({ ...form, userPhone: v })}
+              placeholder="6281234567890"
+            />
+            <Field
+              label="Business Phone Number"
+              value={form.businessPhone}
+              onChange={(v) => setForm({ ...form, businessPhone: v })}
+              placeholder="15550000000"
+            />
+            <Field
+              label="Business Name"
+              value={form.businessName}
+              onChange={(v) => setForm({ ...form, businessName: v })}
+              placeholder="Business Account"
+            />
           </div>
         </div>
 

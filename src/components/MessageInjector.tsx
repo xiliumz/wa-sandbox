@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, MessageSquare, Image, Video, Music, FileText, MousePointerClick, List, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { Field, INPUT_CLASS, LABEL_CLASS } from './Field';
 import {
   createIncomingTextMessage,
   createIncomingMediaMessage,
@@ -47,11 +48,6 @@ const MEDIA_TYPE_OPTIONS: MediaTypeOption[] = [
   { type: 'audio', icon: <Music size={16} />, label: 'Audio' },
   { type: 'document', icon: <FileText size={16} />, label: 'Document' },
 ];
-
-const INPUT_CLASS =
-  'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg '
-  + 'focus:outline-none focus:ring-2 focus:ring-whatsapp-green focus:border-transparent bg-white';
-const LABEL_CLASS = 'block text-xs font-medium text-gray-600 mb-1';
 
 export function MessageInjector({
   isOpen,
@@ -229,16 +225,14 @@ export function MessageInjector({
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {activeTab === 'text' && (
-            <div>
-              <label className={LABEL_CLASS}>Message Text</label>
-              <textarea
-                value={textContent}
-                onChange={(e) => setTextContent(e.target.value)}
-                rows={4}
-                className={cn(INPUT_CLASS, 'resize-none')}
-                placeholder="Enter message text..."
-              />
-            </div>
+            <Field
+              label="Message Text"
+              multiline
+              rows={4}
+              value={textContent}
+              onChange={setTextContent}
+              placeholder="Enter message text..."
+            />
           )}
 
           {activeTab === 'media' && (
@@ -264,64 +258,46 @@ export function MessageInjector({
                 </div>
               </div>
 
-              <div>
-                <label className={LABEL_CLASS}>Media URL</label>
-                <input
-                  type="text"
-                  value={mediaUrl}
-                  onChange={(e) => setMediaUrl(e.target.value)}
-                  className={INPUT_CLASS}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
+              <Field
+                label="Media URL"
+                value={mediaUrl}
+                onChange={setMediaUrl}
+                placeholder="https://example.com/image.jpg"
+              />
 
-              <div>
-                <label className={LABEL_CLASS}>Caption (optional)</label>
-                <input
-                  type="text"
-                  value={mediaCaption}
-                  onChange={(e) => setMediaCaption(e.target.value)}
-                  className={INPUT_CLASS}
-                  placeholder="Add a caption..."
-                />
-              </div>
+              <Field
+                label="Caption (optional)"
+                value={mediaCaption}
+                onChange={setMediaCaption}
+                placeholder="Add a caption..."
+              />
             </div>
           )}
 
           {activeTab === 'button' && (
             <div className="space-y-3">
-              <div>
-                <label className={LABEL_CLASS}>Header (optional)</label>
-                <input
-                  type="text"
-                  value={buttonHeader}
-                  onChange={(e) => setButtonHeader(e.target.value)}
-                  className={INPUT_CLASS}
-                  placeholder="Header text"
-                />
-              </div>
+              <Field
+                label="Header (optional)"
+                value={buttonHeader}
+                onChange={setButtonHeader}
+                placeholder="Header text"
+              />
 
-              <div>
-                <label className={LABEL_CLASS}>Body</label>
-                <textarea
-                  value={buttonBody}
-                  onChange={(e) => setButtonBody(e.target.value)}
-                  rows={3}
-                  className={cn(INPUT_CLASS, 'resize-none')}
-                  placeholder="Message body text"
-                />
-              </div>
+              <Field
+                label="Body"
+                multiline
+                rows={3}
+                value={buttonBody}
+                onChange={setButtonBody}
+                placeholder="Message body text"
+              />
 
-              <div>
-                <label className={LABEL_CLASS}>Footer (optional)</label>
-                <input
-                  type="text"
-                  value={buttonFooter}
-                  onChange={(e) => setButtonFooter(e.target.value)}
-                  className={INPUT_CLASS}
-                  placeholder="Footer text"
-                />
-              </div>
+              <Field
+                label="Footer (optional)"
+                value={buttonFooter}
+                onChange={setButtonFooter}
+                placeholder="Footer text"
+              />
 
               <div>
                 <label className={LABEL_CLASS}>Buttons (max 3)</label>
@@ -368,49 +344,35 @@ export function MessageInjector({
 
           {activeTab === 'list' && (
             <div className="space-y-3">
-              <div>
-                <label className={LABEL_CLASS}>Header (optional)</label>
-                <input
-                  type="text"
-                  value={listHeader}
-                  onChange={(e) => setListHeader(e.target.value)}
-                  className={INPUT_CLASS}
-                  placeholder="Header text"
-                />
-              </div>
+              <Field
+                label="Header (optional)"
+                value={listHeader}
+                onChange={setListHeader}
+                placeholder="Header text"
+              />
 
-              <div>
-                <label className={LABEL_CLASS}>Body</label>
-                <textarea
-                  value={listBody}
-                  onChange={(e) => setListBody(e.target.value)}
-                  rows={2}
-                  className={cn(INPUT_CLASS, 'resize-none')}
-                  placeholder="Message body text"
-                />
-              </div>
+              <Field
+                label="Body"
+                multiline
+                rows={2}
+                value={listBody}
+                onChange={setListBody}
+                placeholder="Message body text"
+              />
 
-              <div>
-                <label className={LABEL_CLASS}>Footer (optional)</label>
-                <input
-                  type="text"
-                  value={listFooter}
-                  onChange={(e) => setListFooter(e.target.value)}
-                  className={INPUT_CLASS}
-                  placeholder="Footer text"
-                />
-              </div>
+              <Field
+                label="Footer (optional)"
+                value={listFooter}
+                onChange={setListFooter}
+                placeholder="Footer text"
+              />
 
-              <div>
-                <label className={LABEL_CLASS}>Action Button Text</label>
-                <input
-                  type="text"
-                  value={listButtonText}
-                  onChange={(e) => setListButtonText(e.target.value)}
-                  className={INPUT_CLASS}
-                  placeholder="Select Option"
-                />
-              </div>
+              <Field
+                label="Action Button Text"
+                value={listButtonText}
+                onChange={setListButtonText}
+                placeholder="Select Option"
+              />
 
               <div className="space-y-4">
                 <label className={LABEL_CLASS}>Sections & Rows</label>
