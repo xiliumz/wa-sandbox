@@ -94,8 +94,8 @@ export function ChatInput({ onSendText, onSendMedia, onSendVoice, disabled }: Ch
       timerRef.current = setInterval(() => {
         setRecordingDuration((d) => d + 1);
       }, 1000);
-    } catch {
-      console.error('Failed to start recording');
+    } catch (error) {
+      console.error('Failed to start recording:', error);
       setIsRecording(false);
     }
   }, [onSendVoice]);

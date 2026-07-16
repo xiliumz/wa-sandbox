@@ -17,8 +17,8 @@ export function useWebhook(config: ChatConfig): WebhookApi {
     if (config.appSecret) {
       try {
         headers['X-Hub-Signature-256'] = await computeSignature(body, config.appSecret);
-      } catch {
-        console.warn('Failed to compute webhook signature');
+      } catch (error) {
+        console.warn('Failed to compute webhook signature:', error);
       }
     }
 

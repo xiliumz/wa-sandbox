@@ -55,7 +55,8 @@ export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
         ws.onerror = () => {
           ws.close();
         };
-      } catch {
+      } catch (error) {
+        console.error('[WS] Connection failed:', error);
         reconnectRef.current = setTimeout(connect, 3000);
       }
     };
