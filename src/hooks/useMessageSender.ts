@@ -40,7 +40,7 @@ export function useMessageSender(options: UseMessageSenderOptions) {
         const file = files[i];
         const url = URL.createObjectURL(file);
         const fileCaption = i === 0 ? caption : undefined;
-        const message = createOutgoingMediaMessage(type, url, file, fileCaption);
+        const message = createOutgoingMediaMessage({ type, mediaUrl: url, file, caption: fileCaption });
         addMessage(message);
         await dispatchMessage(message);
       }
@@ -52,7 +52,7 @@ export function useMessageSender(options: UseMessageSenderOptions) {
     async (blob: Blob) => {
       const file = new File([blob], 'voice.ogg', { type: blob.type || 'audio/ogg' });
       const url = URL.createObjectURL(file);
-      const message = createOutgoingMediaMessage('audio', url, file, undefined, true);
+      const message = createOutgoingMediaMessage({ type: 'audio', mediaUrl: url, file, voice: true });
       addMessage(message);
       await dispatchMessage(message);
     },

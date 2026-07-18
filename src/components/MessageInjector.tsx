@@ -101,7 +101,11 @@ export function MessageInjector({
   const handleInjectMedia = () => {
     if (mediaUrl.trim()) {
       onInjectMessage(
-        createIncomingMediaMessage(mediaType, mediaUrl.trim(), mediaCaption.trim() || undefined),
+        createIncomingMediaMessage({
+          type: mediaType,
+          mediaUrl: mediaUrl.trim(),
+          caption: mediaCaption.trim() || undefined,
+        }),
       );
       onClose();
     }
@@ -110,12 +114,12 @@ export function MessageInjector({
   const handleInjectButton = () => {
     if (buttonBody.trim() && buttons.length > 0) {
       onInjectMessage(
-        createIncomingInteractiveButton(
-          buttonBody.trim(),
+        createIncomingInteractiveButton({
+          body: buttonBody.trim(),
           buttons,
-          buttonHeader.trim() ? { type: 'text', text: buttonHeader.trim() } : undefined,
-          buttonFooter.trim() || undefined,
-        ),
+          header: buttonHeader.trim() ? { type: 'text', text: buttonHeader.trim() } : undefined,
+          footer: buttonFooter.trim() || undefined,
+        }),
       );
       onClose();
     }
@@ -124,13 +128,13 @@ export function MessageInjector({
   const handleInjectList = () => {
     if (listBody.trim() && sections.length > 0) {
       onInjectMessage(
-        createIncomingInteractiveList(
-          listBody.trim(),
-          listButtonText.trim() || 'Select Option',
+        createIncomingInteractiveList({
+          body: listBody.trim(),
+          buttonText: listButtonText.trim() || 'Select Option',
           sections,
-          listHeader.trim() || undefined,
-          listFooter.trim() || undefined,
-        ),
+          headerText: listHeader.trim() || undefined,
+          footer: listFooter.trim() || undefined,
+        }),
       );
       onClose();
     }

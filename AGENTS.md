@@ -141,6 +141,10 @@ Follow these principles when working on this project:
 - Constants that are fixed values: `UPPER_SNAKE_CASE` when exported as true constants, otherwise `camelCase`.
 - Custom hooks must start with `use`.
 
+**Function parameters:**
+
+- Functions with more than 3 parameters must take a single options object instead of positional arguments (e.g., `createOutgoingMediaMessage(options: OutgoingMediaOptions)`).
+
 **Export style:**
 
 - Prefer **named exports** for hooks and components (e.g., `export function useChatStore()`).

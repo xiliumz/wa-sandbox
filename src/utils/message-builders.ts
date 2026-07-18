@@ -30,13 +30,17 @@ export function createOutgoingTextMessage(content: string): TextMessage {
   };
 }
 
-export function createOutgoingMediaMessage(
-  type: MediaType,
-  mediaUrl: string,
-  file: File,
-  caption?: string,
-  voice?: boolean,
-): MediaMessage {
+interface OutgoingMediaOptions {
+  type: MediaType;
+  mediaUrl: string;
+  file: File;
+  caption?: string;
+  /** True for recorded voice notes (maps to Meta's `audio.voice` flag); regular audio files omit it. */
+  voice?: boolean;
+}
+
+export function createOutgoingMediaMessage(options: OutgoingMediaOptions): MediaMessage {
+  const { type, mediaUrl, file, caption, voice } = options;
   return {
     ...createMessageStamp(),
     type,
@@ -93,13 +97,16 @@ export function createIncomingTextMessage(content: string): TextMessage {
   };
 }
 
-export function createIncomingMediaMessage(
-  type: MediaType,
-  mediaUrl: string,
-  caption?: string,
-  mimeType?: string,
-  filename?: string,
-): MediaMessage {
+interface IncomingMediaOptions {
+  type: MediaType;
+  mediaUrl: string;
+  caption?: string;
+  mimeType?: string;
+  filename?: string;
+}
+
+export function createIncomingMediaMessage(options: IncomingMediaOptions): MediaMessage {
+  const { type, mediaUrl, caption, mimeType, filename } = options;
   return {
     ...createMessageStamp(),
     type,
@@ -112,12 +119,17 @@ export function createIncomingMediaMessage(
   };
 }
 
+interface IncomingInteractiveButtonOptions {
+  body: string;
+  buttons: InteractiveButtonOption[];
+  header?: { type: 'text' | 'image' | 'video' | 'document'; text?: string; mediaUrl?: string };
+  footer?: string;
+}
+
 export function createIncomingInteractiveButton(
-  body: string,
-  buttons: InteractiveButtonOption[],
-  header?: { type: 'text' | 'image' | 'video' | 'document'; text?: string; mediaUrl?: string },
-  footer?: string,
+  options: IncomingInteractiveButtonOptions,
 ): InteractiveButtonMessage {
+  const { body, buttons, header, footer } = options;
   return {
     ...createMessageStamp(),
     type: 'interactive_button',
@@ -130,13 +142,18 @@ export function createIncomingInteractiveButton(
   };
 }
 
+interface IncomingInteractiveListOptions {
+  body: string;
+  buttonText: string;
+  sections: InteractiveListSection[];
+  headerText?: string;
+  footer?: string;
+}
+
 export function createIncomingInteractiveList(
-  body: string,
-  buttonText: string,
-  sections: InteractiveListSection[],
-  headerText?: string,
-  footer?: string,
+  options: IncomingInteractiveListOptions,
 ): InteractiveListMessage {
+  const { body, buttonText, sections, headerText, footer } = options;
   return {
     ...createMessageStamp(),
     type: 'interactive_list',
