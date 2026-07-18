@@ -7,8 +7,22 @@ interface UseWebSocketOptions {
   onMessage: (messages: Message[]) => void;
 }
 
-export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
+/**
+ * Resolve config URL to ws:/wss:. WebSocket constructor rejects http(s):
+ * URLs, and HTTPS pages require wss: to avoid mixed-content blocking.
+ */
+function buildWsUrl(url: string, phone: string): string {
+  const wsUrl = new URL(url, window.location.href);
+  if (wsUrl.protocol === 'http:' || wsUrl.protocol === 'https:') {
+    wsUrl.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  }
+  if (phone) {
+    wsUrl.searchParams.set('phone', phone);
+  }
+  return wsUrl.toString();
+}
 
+export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onMessageRef = useRef(onMessage);
@@ -20,14 +34,7 @@ export function useWebSocket({ url, phone, onMessage }: UseWebSocketOptions) {
 
     const connect = () => {
       try {
-        const wsUrl = new URL(url, window.location.href);
-        if (wsUrl.protocol === 'http:' || wsUrl.protocol === 'https:') {
-          wsUrl.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        }
-        if (phone) {
-          wsUrl.searchParams.set('phone', phone);
-        }
-        const ws = new WebSocket(wsUrl.toString());
+        const ws = new WebSocket(buildWsUrl(url, phone));
         wsRef.current = ws;
 
         ws.onopen = () => {
