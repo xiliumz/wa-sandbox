@@ -87,7 +87,6 @@ export function ChatContainer() {
 
       <ListSelectionModal
         message={activeListMessage}
-        isOpen={!!activeListMessageId}
         onClose={() => setActiveListMessageId(null)}
         onSelect={handleListSelect}
       />

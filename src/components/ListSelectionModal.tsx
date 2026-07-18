@@ -4,18 +4,17 @@ import type { InteractiveListMessage } from '@/types/messages';
 
 interface ListSelectionModalProps {
   message: InteractiveListMessage | null;
-  isOpen: boolean;
   onClose: () => void;
   onSelect: (rowId: string, rowTitle: string, rowDescription?: string) => void;
 }
 
-export function ListSelectionModal({ message, isOpen, onClose, onSelect }: ListSelectionModalProps) {
+export function ListSelectionModal({ message, onClose, onSelect }: ListSelectionModalProps) {
   const handleSelect = useCallback((rowId: string, rowTitle: string, rowDescription?: string) => {
     onSelect(rowId, rowTitle, rowDescription);
     onClose();
   }, [onSelect, onClose]);
 
-  if (!isOpen || !message) return null;
+  if (!message) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
