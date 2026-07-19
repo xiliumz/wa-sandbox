@@ -131,8 +131,8 @@ The nginx config in the frontend container acts as a reverse proxy:
 ```
 Browser ──▶ nginx (port 80)
              ├── /           → serves static React SPA
-|             ├── /api/*      → proxy_pass to backend:4001 (HTTP API)
-|             └── /api/ws     → proxy_pass to backend:4001 (WebSocket upgrade)
+             ├── /api/*      → proxy_pass to backend:3001 (HTTP API)
+             └── /api/ws     → proxy_pass to backend:3001 (WebSocket upgrade)
 ```
 
 This means from the browser's perspective, everything is served from the same origin (`localhost:4000`), avoiding CORS issues. The nginx container communicates with the backend container over Docker's internal network using the service name `backend`.
