@@ -1,6 +1,7 @@
-import { FileText, Music, Download, Play, Pause } from 'lucide-react';
+import { FileText, Music, Download, Play, Pause, ImageOff } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/utils/cn';
+import { useBlobUrlAlive } from '@/hooks/useBlobUrlAlive';
 import type { MediaMessage } from '@/types/messages';
 
 interface MediaBubbleProps {
@@ -108,8 +109,17 @@ function AudioPlayer({ url, isOutgoing }: { url: string; isOutgoing: boolean }) 
 export function MediaBubble({ message }: MediaBubbleProps) {
   const { type, mediaUrl, caption, filename, fileSize, direction, timestamp, voice } = message;
   const isOutgoing = direction === 'outgoing';
+  const isMediaAlive = useBlobUrlAlive(mediaUrl);
 
   const renderMedia = () => {
+    if (!isMediaAlive) {
+      return (
+        <div className="flex items-center gap-2 p-3 min-w-[200px]">
+          <ImageOff size={20} className="text-gray-400 shrink-0" />
+          <p className="text-xs text-gray-500 italic">Media no longer available</p>
+        </div>
+      );
+    }
     switch (type) {
       case 'image':
         return (
