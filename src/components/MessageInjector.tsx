@@ -116,7 +116,8 @@ export function MessageInjector({
       onInjectMessage(
         createIncomingInteractiveButton({
           body: buttonBody.trim(),
-          buttons,
+          // Clone so later edits in this form can't mutate the injected message
+          buttons: structuredClone(buttons),
           header: buttonHeader.trim() ? { type: 'text', text: buttonHeader.trim() } : undefined,
           footer: buttonFooter.trim() || undefined,
         }),
@@ -131,7 +132,8 @@ export function MessageInjector({
         createIncomingInteractiveList({
           body: listBody.trim(),
           buttonText: listButtonText.trim() || 'Select Option',
-          sections,
+          // Clone so later edits in this form can't mutate the injected message
+          sections: structuredClone(sections),
           headerText: listHeader.trim() || undefined,
           footer: listFooter.trim() || undefined,
         }),
@@ -165,13 +167,19 @@ export function MessageInjector({
   };
 
   const addRow = (sectionIndex: number) => {
-    const updated = [...sections];
-    updated[sectionIndex].rows.push({
-      id: `row_${Date.now()}`,
-      title: `Row ${updated[sectionIndex].rows.length + 1}`,
-      description: '',
-    });
-    setSections(updated);
+    setSections((prev) =>
+      prev.map((section, i) =>
+        i === sectionIndex
+          ? {
+            ...section,
+            rows: [
+              ...section.rows,
+              { id: `row_${Date.now()}`, title: `Row ${section.rows.length + 1}`, description: '' },
+            ],
+          }
+          : section,
+      ),
+    );
   };
 
   const updateRow = (
@@ -180,21 +188,28 @@ export function MessageInjector({
     field: 'id' | 'title' | 'description',
     value: string,
   ) => {
-    const updated = [...sections];
-    updated[sectionIndex].rows[rowIndex] = {
-      ...updated[sectionIndex].rows[rowIndex],
-      [field]: value,
-    };
-    setSections(updated);
+    setSections((prev) =>
+      prev.map((section, i) =>
+        i === sectionIndex
+          ? {
+            ...section,
+            rows: section.rows.map((row, j) => (j === rowIndex ? { ...row, [field]: value } : row)),
+          }
+          : section,
+      ),
+    );
   };
 
   const removeRow = (sectionIndex: number, rowIndex: number) => {
-    const updated = [...sections];
-    updated[sectionIndex].rows = updated[sectionIndex].rows.filter((_, i) => i !== rowIndex);
-    if (updated[sectionIndex].rows.length === 0) {
-      updated.splice(sectionIndex, 1);
-    }
-    setSections(updated);
+    setSections((prev) =>
+      prev
+        .map((section, i) =>
+          i === sectionIndex
+            ? { ...section, rows: section.rows.filter((_, j) => j !== rowIndex) }
+            : section,
+        )
+        .filter((section) => section.rows.length > 0),
+    );
   };
 
   return (
@@ -386,9 +401,10 @@ export function MessageInjector({
                       type="text"
                       value={section.title || ''}
                       onChange={(e) => {
-                        const updated = [...sections];
-                        updated[sectionIndex].title = e.target.value;
-                        setSections(updated);
+                        const title = e.target.value;
+                        setSections((prev) =>
+                          prev.map((s, i) => (i === sectionIndex ? { ...s, title } : s)),
+                        );
                       }}
                       className={cn(INPUT_CLASS, 'font-medium')}
                       placeholder="Section title"
