@@ -27,10 +27,7 @@ export function ChatContainer() {
     phone: configStore.config.userPhone,
     onMessage: (msgs: Message[]) => {
       msgs.forEach((msg) => {
-        const exists = messageStore.messages.find((m) => m.id === msg.id);
-        if (!exists) {
-          messageStore.addMessage({ ...msg, direction: 'incoming', status: 'read' });
-        }
+        messageStore.addMessage({ ...msg, direction: 'incoming', status: 'read' });
       });
     },
   });
