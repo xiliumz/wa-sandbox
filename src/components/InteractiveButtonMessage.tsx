@@ -1,14 +1,11 @@
 import { Reply } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatTime } from '@/utils/format-time';
 import type { InteractiveButtonMessage } from '@/types/messages';
 
 interface InteractiveButtonMessageProps {
   message: InteractiveButtonMessage;
   onButtonClick: (buttonId: string, buttonTitle: string) => void;
-}
-
-function formatTime(timestamp: number): string {
-  return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 export function InteractiveButtonMessageCard({ message, onButtonClick }: InteractiveButtonMessageProps) {

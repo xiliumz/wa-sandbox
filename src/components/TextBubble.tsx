@@ -1,5 +1,6 @@
 import { Check, CheckCheck, Clock } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatTime } from '@/utils/format-time';
 import type { MessageStatus } from '@/types/messages';
 
 interface TextBubbleProps {
@@ -7,10 +8,6 @@ interface TextBubbleProps {
   direction: 'incoming' | 'outgoing';
   timestamp: number;
   status?: MessageStatus;
-}
-
-function formatTime(timestamp: number): string {
-  return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 function StatusIcon({ status }: { status?: MessageStatus }) {

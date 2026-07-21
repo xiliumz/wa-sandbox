@@ -1,13 +1,10 @@
 import { List } from 'lucide-react';
+import { formatTime } from '@/utils/format-time';
 import type { InteractiveListMessage } from '@/types/messages';
 
 interface InteractiveListMessageProps {
   message: InteractiveListMessage;
   onOpenList: (messageId: string) => void;
-}
-
-function formatTime(timestamp: number): string {
-  return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 export function InteractiveListMessageCard({ message, onOpenList }: InteractiveListMessageProps) {
