@@ -19,6 +19,8 @@ export interface TextMessage extends BaseMessage {
 export interface MediaMessage extends BaseMessage {
   type: MediaType;
   mediaUrl: string;
+  /** Meta media handle when the backend sent media by `id` instead of a URL; unresolvable in the sandbox */
+  mediaId?: string;
   caption?: string;
   mimeType?: string;
   filename?: string;

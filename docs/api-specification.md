@@ -253,3 +253,27 @@ Headers:
 - Max **10 rows** total
 - Max **10 sections**
 - Each row `title` ≤ 24 characters
+
+### 4. Send **Media** (Image / Video / Audio / Document)
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "recipient_type": "individual",
+  "to": "6281234567890",
+  "type": "image",
+  "image": {
+    "link": "https://cdn.example.com/product.jpg",   // public URL; or "id" for uploaded media
+    "caption": "Here is the product photo"           // optional
+  }
+}
+```
+
+The nested media object key must match `type`. Each accepts either `link` (a public URL) or `id` (a handle to media you uploaded to Meta first) as the source — never both:
+
+- `image`: `{ link | id, caption? }`
+- `video`: `{ link | id, caption? }`
+- `audio`: `{ link | id }` — no caption; add `"voice": true` to render as a voice note in the simulator
+- `document`: `{ link | id, caption?, filename? }`
+
+**Bridge note**: the sandbox bridge (`POST /api/messages`) normalizes these into the simulator's internal media shape (`mediaUrl`, `mediaId`, `caption`, `filename`, `mimeType`, `voice`). It renders a `link` directly. It has no Media API store to resolve an `id`, so media sent by `id` is passed through as `mediaId` and shown as a "Media by ID" placeholder. Only the send-format keys `link` and `id` are accepted.

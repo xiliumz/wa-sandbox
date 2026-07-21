@@ -1,15 +1,34 @@
-import { FileText, Music, Download, Play, Pause, ImageOff } from 'lucide-react';
+import {
+  FileText,
+  Music,
+  Download,
+  Play,
+  Pause,
+  ImageOff,
+  Image as ImageIcon,
+  Film,
+} from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/utils/cn';
 import { useBlobUrlAlive } from '@/hooks/useBlobUrlAlive';
-import type { MediaMessage } from '@/types/messages';
+import type { MediaMessage, MediaType } from '@/types/messages';
+
+const MEDIA_ID_ICONS: Record<MediaType, typeof ImageIcon> = {
+  image: ImageIcon,
+  video: Film,
+  audio: Music,
+  document: FileText,
+};
 
 interface MediaBubbleProps {
   message: MediaMessage;
 }
 
 function formatTime(timestamp: number): string {
-  return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return new Date(timestamp).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 function formatSize(bytes?: number): string {
@@ -25,7 +44,13 @@ function formatAudioDuration(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function AudioPlayer({ url, isOutgoing }: { url: string; isOutgoing: boolean }) {
+function AudioPlayer({
+  url,
+  isOutgoing,
+}: {
+  url: string;
+  isOutgoing: boolean;
+}) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -60,7 +85,10 @@ function AudioPlayer({ url, isOutgoing }: { url: string; isOutgoing: boolean }) 
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => setIsPlaying(false));
     }
   }, [isPlaying]);
 
@@ -94,10 +122,20 @@ function AudioPlayer({ url, isOutgoing }: { url: string; isOutgoing: boolean }) 
           />
         </div>
         <div className="flex justify-between items-center">
-          <span className={cn('text-[10px]', isOutgoing ? 'text-white/70' : 'text-gray-500')}>
+          <span
+            className={cn(
+              'text-[10px]',
+              isOutgoing ? 'text-white/70' : 'text-gray-500',
+            )}
+          >
             {formatAudioDuration(currentTime)}
           </span>
-          <span className={cn('text-[10px]', isOutgoing ? 'text-white/70' : 'text-gray-500')}>
+          <span
+            className={cn(
+              'text-[10px]',
+              isOutgoing ? 'text-white/70' : 'text-gray-500',
+            )}
+          >
             {formatAudioDuration(duration)}
           </span>
         </div>
@@ -106,17 +144,59 @@ function AudioPlayer({ url, isOutgoing }: { url: string; isOutgoing: boolean }) 
   );
 }
 
+function MediaByIdPlaceholder({
+  type,
+  mediaId,
+}: {
+  type: MediaType;
+  mediaId: string;
+}) {
+  const Icon = MEDIA_ID_ICONS[type];
+  const shortId = mediaId.length > 20 ? `${mediaId.slice(0, 20)}…` : mediaId;
+  return (
+    // eslint-disable-next-line @stylistic/max-len
+    <div className="flex flex-col items-center justify-center gap-1.5 p-4 min-w-[220px] text-center rounded-t-lg border-2 border-dashed border-gray-300 bg-gray-50">
+      <Icon size={28} className="text-gray-400 shrink-0" />
+      <p className="text-xs font-medium text-gray-600">Media by ID</p>
+      <p className="text-[11px] leading-tight text-gray-500">
+        Backend referenced an uploaded media handle
+      </p>
+      <p className="text-[10px] font-mono text-gray-400 break-all">
+        id: {shortId}
+      </p>
+      <p className="text-[10px] italic text-gray-400">
+        Sandbox can&apos;t fetch bytes
+      </p>
+    </div>
+  );
+}
+
 export function MediaBubble({ message }: MediaBubbleProps) {
-  const { type, mediaUrl, caption, filename, fileSize, direction, timestamp, voice } = message;
+  const {
+    type,
+    mediaUrl,
+    mediaId,
+    caption,
+    filename,
+    fileSize,
+    direction,
+    timestamp,
+    voice,
+  } = message;
   const isOutgoing = direction === 'outgoing';
   const isMediaAlive = useBlobUrlAlive(mediaUrl);
 
   const renderMedia = () => {
+    if (!mediaUrl && mediaId) {
+      return <MediaByIdPlaceholder type={type} mediaId={mediaId} />;
+    }
     if (!isMediaAlive) {
       return (
         <div className="flex items-center gap-2 p-3 min-w-[200px]">
           <ImageOff size={20} className="text-gray-400 shrink-0" />
-          <p className="text-xs text-gray-500 italic">Media no longer available</p>
+          <p className="text-xs text-gray-500 italic">
+            Media no longer available
+          </p>
         </div>
       );
     }
@@ -149,7 +229,11 @@ export function MediaBubble({ message }: MediaBubbleProps) {
             ) : (
               <div className="flex items-center gap-2 p-2 min-w-[200px]">
                 <Music size={24} className="text-gray-400 shrink-0" />
-                <audio src={mediaUrl} className="w-full max-w-[200px]" controls />
+                <audio
+                  src={mediaUrl}
+                  className="w-full max-w-[200px]"
+                  controls
+                />
               </div>
             )}
           </div>
@@ -161,7 +245,9 @@ export function MediaBubble({ message }: MediaBubbleProps) {
               <FileText size={20} className="text-gray-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-700 truncate">{filename || 'Document'}</p>
+              <p className="text-sm font-medium text-gray-700 truncate">
+                {filename || 'Document'}
+              </p>
               <p className="text-xs text-gray-500">{formatSize(fileSize)}</p>
             </div>
             <a
@@ -196,12 +282,16 @@ export function MediaBubble({ message }: MediaBubbleProps) {
           </div>
         )}
         <div className="flex items-center justify-end gap-1 px-3 pb-1">
-          <span className="text-[10px] text-gray-500">{formatTime(timestamp)}</span>
+          <span className="text-[10px] text-gray-500">
+            {formatTime(timestamp)}
+          </span>
         </div>
         <div
           className={cn(
             'absolute top-0 w-3 h-3',
-            isOutgoing ? '-right-[3px] bg-whatsapp-bubble-outgoing' : '-left-[3px] bg-whatsapp-bubble-incoming',
+            isOutgoing
+              ? '-right-[3px] bg-whatsapp-bubble-outgoing'
+              : '-left-[3px] bg-whatsapp-bubble-incoming',
           )}
           style={{
             clipPath: isOutgoing
