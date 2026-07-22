@@ -104,18 +104,16 @@ cp .env.example .env
 docker compose up --build
 ```
 
-> There are currently no test, lint, or format scripts configured. If you add tests, use **Vitest** (Vite-native) and place `*.test.ts(x)` files next to the source files they test.
+> `lint` and `lint:fix` run ESLint; there are currently no test or format scripts configured. If you add tests, use **Vitest** (Vite-native) and place `*.test.ts(x)` files next to the source files they test.
 
 ## 4. Code Style & Naming Conventions (Explicit)
 
 **Development Principles**
 
-Follow these principles when working on this project:
-
-- **KISS (Keep It Simple, Stupid)** — Prefer simple solutions. Avoid unnecessary abstractions, frameworks, or configuration. If a feature can be built with plain Astro and a little TypeScript, do not add a heavier tool.
-- **YAGNI (You Aren't Gonna Need It)** — Do not implement features, components, or APIs before they are actually required. Build for the current phase, not every possible future scenario.
-- **Single Responsibility** — Each file, component, and function should do one thing well. Astro components handle UI, schema files handle validation shapes, scripts handle build-time tasks, and data files handle content. Keep concerns separated.
-- **DRY (Don't Repeat Yourself)** — Avoid duplicating logic, data, or structure. Extract reusable components, shared utilities, and common schemas so the same knowledge exists in only one place.
+- **KISS** — Prefer the simplest solution; don't add abstractions or tools the project doesn't already need.
+- **YAGNI** — Build for the current phase; don't implement things before they're required.
+- **Single Responsibility** — Each file and function does one thing; keep UI, state, logic, and types separate.
+- **DRY** — Don't duplicate logic or data; extract it so each piece of knowledge lives in one place.
 
 **Formatting (inferred from existing code):**
 
@@ -172,7 +170,7 @@ Follow these principles when working on this project:
 **State management:**
 
 - No Redux/Zustand/Context API for global state.
-- `useChatStore` is a custom hook that composes `useLocalStorage` for persistence and `useState` for ephemeral UI state.
+- `useMessageStore` and `useConfigStore` are custom hooks that compose `useLocalStorage` for persistence and `useState` for ephemeral UI state.
 - All state updates are immutable (e.g., `[...prev, message]`, `prev.map(...)`).
 
 **API / Data flow:**
@@ -255,7 +253,7 @@ Read these files before making changes to their respective domains:
 
 - **Styling / theme:** `tailwind.config.js`, `src/index.css`, `src/utils/cn.ts`
 - **Routing & build:** `vite.config.ts`, `tsconfig.json`, `index.html`
-- **State / persistence:** `src/hooks/useChatStore.ts`, `src/hooks/useLocalStorage.ts`, `src/constants/config.ts`
+- **State / persistence:** `src/hooks/useMessageStore.ts`, `src/hooks/useConfigStore.ts`, `src/hooks/useLocalStorage.ts`, `src/constants/config.ts`
 - **Outgoing API contract:** `src/hooks/useWebhook.ts`, `src/types/messages.ts`, `docs/api-specification.md`
 - **Incoming API contract:** `server/index.js`, `server/normalize-message.js`, `docs/api-specification.md`
 - **Environment / secrets:** `.env.example`, `src/vite-env.d.ts`
