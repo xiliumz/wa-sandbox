@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Shield, ExternalLink, Copy, Check } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -18,13 +18,17 @@ export function VerificationTester({ webhookUrl, verifyToken }: VerificationTest
   }>({ loading: false });
   const [copied, setCopied] = useState(false);
 
-  const buildUrl = () => {
-    const url = new URL(webhookUrl || 'http://localhost:3000/webhook');
-    url.searchParams.set('hub.mode', 'subscribe');
-    url.searchParams.set('hub.verify_token', verifyToken || 'test_token');
-    url.searchParams.set('hub.challenge', '1158201444');
-    return url.toString();
-  };
+  const url = useMemo<string | null>(() => {
+    try {
+      const u = new URL(webhookUrl || 'http://localhost:3000/webhook');
+      u.searchParams.set('hub.mode', 'subscribe');
+      u.searchParams.set('hub.verify_token', verifyToken || 'test_token');
+      u.searchParams.set('hub.challenge', '1158201444');
+      return u.toString();
+    } catch {
+      return null;
+    }
+  }, [webhookUrl, verifyToken]);
 
   const handleTest = async () => {
     if (!webhookUrl) {
@@ -32,8 +36,9 @@ export function VerificationTester({ webhookUrl, verifyToken }: VerificationTest
       return;
     }
 
+    if (!url) return;
+
     setResult({ loading: true });
-    const url = buildUrl();
 
     try {
       const response = await fetch(url, { method: 'GET' });
@@ -54,9 +59,14 @@ export function VerificationTester({ webhookUrl, verifyToken }: VerificationTest
   };
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(buildUrl());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setResult({ loading: false, error: 'Could not copy to clipboard' });
+    }
   };
 
   return (
@@ -73,10 +83,10 @@ export function VerificationTester({ webhookUrl, verifyToken }: VerificationTest
       <div className="flex gap-2 mb-3">
         <button
           onClick={handleTest}
-          disabled={result.loading}
+          disabled={result.loading || !url}
           className={cn(
             'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-            result.loading
+            result.loading || !url
               ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
               : 'bg-whatsapp-green text-white hover:bg-whatsapp-green-dark',
           )}
@@ -86,13 +96,22 @@ export function VerificationTester({ webhookUrl, verifyToken }: VerificationTest
 
         <button
           onClick={handleCopy}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-          font-medium border border-gray-200 hover:bg-gray-100 transition-colors text-gray-600"
+          disabled={!url}
+          className={cn(
+            'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors',
+            !url
+              ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+              : 'border-gray-200 hover:bg-gray-100 text-gray-600',
+          )}
         >
           {copied ? <Check size={14} /> : <Copy size={14} />}
           {copied ? 'Copied' : 'Copy URL'}
         </button>
       </div>
+
+      {webhookUrl && !url && (
+        <p className="text-xs text-red-600 mb-3">Invalid webhook URL.</p>
+      )}
 
       {result.url && (
         <div className="mb-3 p-2 bg-white rounded border border-gray-200">
