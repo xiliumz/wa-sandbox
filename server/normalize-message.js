@@ -1,3 +1,5 @@
+import { MEDIA_TYPES } from "./constants.js";
+
 /**
  * @typedef {object} MetaTextMessage
  * @property {'text'} type
@@ -25,8 +27,6 @@
  *
  * @typedef {MetaTextMessage | MetaInteractiveButton | MetaInteractiveList | object} MetaMessage
  */
-
-const MEDIA_TYPES = ["image", "video", "audio", "document"];
 
 function generateId() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);

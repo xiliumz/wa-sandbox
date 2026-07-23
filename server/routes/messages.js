@@ -1,8 +1,16 @@
 import { normalizeMessage } from '../normalize-message.js';
 import { broadcastMessages } from '../clients.js';
+import { validateMessages, metaError } from '../validate-message.js';
 
 export function messagesController(req, res) {
   const rawMessages = Array.isArray(req.body) ? req.body : [req.body];
+
+  // Atomic validation: if any message is malformed, reject the whole request and broadcast nothing.
+  const invalidDetail = validateMessages(rawMessages);
+  if (invalidDetail) {
+    console.log(`⛔ Rejected ${rawMessages.length} message(s): ${invalidDetail}`);
+    return res.status(400).json(metaError(invalidDetail));
+  }
 
   const routed = rawMessages.map((raw) => {
     const to = raw.to || raw.recipient || null;

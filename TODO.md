@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] Add bridge-side validation for interactive messages and return `400 Bad Request` when backend sends incorrect button/list payloads. Validate in a pure `server/validate-message.js` module, called from `server/routes/messages.js` **before** normalize/broadcast. Match Meta's real limits and error behavior as closely as possible:
+- [x] Add bridge-side validation for interactive messages and return `400 Bad Request` when backend sends incorrect button/list payloads. Validate in a pure `server/validate-message.js` module, called from `server/routes/messages.js` **before** normalize/broadcast. Match Meta's real limits and error behavior as closely as possible:
   - Reply buttons:
     - max 3 buttons
     - each button `title` ≤ 20 chars
