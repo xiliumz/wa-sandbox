@@ -33,6 +33,33 @@ function generateId() {
 }
 
 /**
+ * Maps a Meta interactive header into the simulator header shape.
+ * Text headers are already `{ type, text }`. Media headers nest bytes under
+ * `image|video|document.link` (or may already carry `mediaUrl`); the UI wants flat `mediaUrl`.
+ *
+ * @param {object | undefined} header
+ * @param {{ allowMedia?: boolean }} [options] - Lists only support text headers in Meta/UI.
+ * @returns {{ type: string, text?: string, mediaUrl?: string } | undefined}
+ */
+function normalizeInteractiveHeader(header, { allowMedia = false } = {}) {
+  if (!header || typeof header !== "object") return undefined;
+
+  const type = header.type || "text";
+
+  // List headers (and plain text button headers): keep the `{ type, text }` shape.
+  if (!allowMedia || type === "text") {
+    return header.text ? { type: "text", text: header.text } : undefined;
+  }
+
+  // Button media header: Meta nests `{ image: { link } }`; accept flat mediaUrl too.
+  return {
+    type,
+    text: header.text,
+    mediaUrl: header.mediaUrl || header[type]?.link || undefined,
+  };
+}
+
+/**
  * Transforms Meta Graph API message format into the simulator's internal Message format.
  *
  * @param {MetaMessage} raw - A message payload from Meta's Graph API (or from your backend).
@@ -63,20 +90,12 @@ export function normalizeMessage(raw) {
     return {
       ...base,
       type: "interactive_button",
-      header: raw.interactive.header
-        ? {
-            type: raw.interactive.header.type || "text",
-            text: raw.interactive.header.text,
-            mediaUrl:
-              raw.interactive.header.image?.link ||
-              raw.interactive.header.video?.link ||
-              raw.interactive.header.document?.link,
-          }
-        : undefined,
+      header: normalizeInteractiveHeader(raw.interactive.header, {
+        allowMedia: true,
+      }),
       body: { text: raw.interactive.body?.text || "" },
-      footer: raw.interactive.footer
-        ? { text: raw.interactive.footer.text }
-        : undefined,
+      // Meta footer is already { text }; pass through when present.
+      footer: raw.interactive.footer || undefined,
       buttons,
     };
   }
@@ -96,11 +115,11 @@ export function normalizeMessage(raw) {
     return {
       ...base,
       type: "interactive_list",
-      header: raw.interactive.header?.text || undefined,
+      // Meta list headers are text-only.
+      header: normalizeInteractiveHeader(raw.interactive.header),
       body: { text: raw.interactive.body?.text || "" },
-      footer: raw.interactive.footer
-        ? { text: raw.interactive.footer.text }
-        : undefined,
+      // Meta footer is already { text }; pass through when present.
+      footer: raw.interactive.footer || undefined,
       buttonText: raw.interactive.action?.button || "Select",
       sections,
     };
