@@ -183,4 +183,4 @@ The payload shape is based on the **Meta Graph API** message structure. The brid
 
 ## License
 
-Private project.
+[MIT](LICENSE) © Azaria Beryl
