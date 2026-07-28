@@ -15,3 +15,6 @@ dist-ssr
 
 # OS
 .DS_Store
+
+# Internal review notes
+REVIEW.md
