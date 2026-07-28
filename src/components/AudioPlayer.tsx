@@ -21,23 +21,31 @@ export function AudioPlayer({
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+
     const audio = new Audio(url);
     audioRef.current = audio;
+    const controller = new AbortController();
+    const { signal } = controller;
 
     audio.addEventListener('loadedmetadata', () => {
       setDuration(audio.duration || 0);
-    });
+    }, { signal });
 
     audio.addEventListener('timeupdate', () => {
       setCurrentTime(audio.currentTime);
-    });
+    }, { signal });
 
     audio.addEventListener('ended', () => {
       setIsPlaying(false);
       setCurrentTime(0);
-    });
+    }, { signal });
 
     return () => {
+      // Detach before teardown so aborting the load can't fire stale updates.
+      controller.abort();
       audio.pause();
       audio.src = '';
     };
